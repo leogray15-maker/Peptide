@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Arcane Peptides
 
-## Getting Started
+Production e-commerce site for [arcanepeptides.co.uk](https://arcanepeptides.co.uk) — a UK research-compound supplier.
 
-First, run the development server:
+Built with **Next.js 16 (App Router) · TypeScript · Tailwind CSS v4**.
+
+---
+
+## Stack
+
+| Layer | Choice |
+|-------|--------|
+| Framework | Next.js 16 App Router |
+| Language | TypeScript |
+| Styling | Tailwind CSS v4 + CSS custom properties (design tokens in `app/globals.css`) |
+| Icons | lucide-react |
+| Payments | Bank Transfer + Crypto (abstracted via `lib/checkout.ts`) |
+| Data | `data/products.ts` — typed flat file, CMS-ready shape |
+| Deployment | Vercel |
+
+---
+
+## Local Setup
 
 ```bash
+# 1 — clone
+git clone https://github.com/your-org/arcane-peptides.git
+cd arcane-peptides
+
+# 2 — install
+npm install
+
+# 3 — env
+cp .env.example .env.local
+# fill in the values in .env.local
+
+# 4 — dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Push to GitHub.
+2. Import the repo in [vercel.com/new](https://vercel.com/new).
+3. Add all env vars from `.env.example` in the Vercel dashboard → Settings → Environment Variables.
+4. Deploy — Vercel auto-detects Next.js. No `vercel.json` required.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Adding Products
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All catalogue data lives in [`data/products.ts`](data/products.ts). To add a product:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Add an entry to the `products` array following the `Product` type.
+2. Redeploy to pick up changes in production.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Changing Payment Details
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Bank and crypto wallet details are environment variables (`NEXT_PUBLIC_BANK_*`, `NEXT_PUBLIC_CRYPTO_*`). Update them in Vercel without a code change.
+
+---
+
+## Design Tokens
+
+All brand colours and typography live in `:root` inside [`app/globals.css`](app/globals.css). To re-theme the site, edit those variables only.
+
+---
+
+## Commit Conventions
+
+`feat:` · `fix:` · `chore:` · `style:` · `docs:` · `refactor:`
