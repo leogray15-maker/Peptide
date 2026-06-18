@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { useCart, lineTotal } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
-import { Button } from "@/components/ui/Button";
 import { getBulkDiscount } from "@/lib/config";
 import { FREE_SHIPPING_THRESHOLD_GBP } from "@/lib/config";
 

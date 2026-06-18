@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Copy, Check, Bitcoin, Building2, ShieldCheck } from "lucide-react";
-import { useCart, cartTotal } from "@/contexts/CartContext";
+import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
 import { Button } from "@/components/ui/Button";
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
 
               {/* Bank transfer instructions */}
               {order.instructions.type === "bank_transfer" && (
-                <PaymentInstructions title="Bank Transfer Details" reference={order.orderId} amount={format((order.instructions as BankInstructions).amount)}>
+                <PaymentInstructions title="Bank Transfer Details" reference={order.orderId}>
                   {[
                     { label: "Bank Name",       value: (order.instructions as BankInstructions).bankName },
                     { label: "Sort Code",        value: (order.instructions as BankInstructions).sortCode },
@@ -216,7 +216,7 @@ export default function CheckoutPage() {
 
               {/* Crypto instructions */}
               {order.instructions.type === "crypto" && (
-                <PaymentInstructions title={`${(order.instructions as CryptoInstructions).coin} Payment`} reference={order.orderId} amount={format((order.instructions as CryptoInstructions).amount)}>
+                <PaymentInstructions title={`${(order.instructions as CryptoInstructions).coin} Payment`} reference={order.orderId}>
                   <p className="text-sm mb-4" style={{ color: "var(--muted)" }}>
                     Send <strong style={{ color: "var(--text)" }}>{format((order.instructions as CryptoInstructions).amount)} GBP equivalent</strong> in {(order.instructions as CryptoInstructions).coin} to the address below. Include your order reference in the transaction memo if your wallet supports it.
                   </p>
@@ -335,11 +335,10 @@ function Field({
 }
 
 function PaymentInstructions({
-  title, reference, amount, children,
+  title, reference, children,
 }: {
   title: string;
   reference: string;
-  amount: string;
   children: React.ReactNode;
 }) {
   return (

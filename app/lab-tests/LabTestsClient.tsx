@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Search, Download, ExternalLink } from "lucide-react";
+import { Search, Download } from "lucide-react";
 
 interface Batch {
   lot: string;

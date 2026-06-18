@@ -1,7 +1,7 @@
 "use client";
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, Grid, List, LayoutGrid } from "lucide-react";
+import { SlidersHorizontal, List, LayoutGrid } from "lucide-react";
 import { uniqueProducts, CATEGORIES, type Category, type ProductBadge } from "@/data/products";
 import ProductCard from "@/components/shop/ProductCard";
 import QuickViewModal from "@/components/shop/QuickViewModal";
@@ -10,15 +10,36 @@ import type { Product } from "@/data/products";
 type SortKey = "default" | "name-asc" | "name-desc" | "price-asc" | "price-desc";
 type ShowCount = 24 | 48 | 96;
 
-function ShopContent() {
+interface InitialParams {
+  category: Category | "";
+  badge: ProductBadge | "";
+  sort: SortKey;
+}
+
+// Isolated so only this (invisible) component waits on useSearchParams's
+// Suspense boundary — keeps the rest of the page rendering immediately
+// instead of the whole catalogue snapping in after hydration (huge CLS).
+function ShopParamsBridge({ onReady }: { onReady: (params: InitialParams) => void }) {
   const searchParams = useSearchParams();
+  useEffect(() => {
+    onReady({
+      category: (searchParams.get("category") as Category) ?? "",
+      badge: (searchParams.get("badge") as ProductBadge) ?? "",
+      sort: (searchParams.get("sort") as SortKey) ?? "default",
+    });
+  }, [searchParams, onReady]);
+  return null;
+}
+
+function ShopContent() {
+  const appliedInitialParams = useRef(false);
 
   const [priceMin, setPriceMin] = useState(0);
   const [priceMax, setPriceMax] = useState(500);
-  const [filterCategory, setFilterCategory] = useState<Category | "">((searchParams.get("category") as Category) ?? "");
+  const [filterCategory, setFilterCategory] = useState<Category | "">("");
   const [filterInStock, setFilterInStock] = useState<"all" | "in" | "out">("all");
-  const [filterBadge, setFilterBadge] = useState<ProductBadge | "">((searchParams.get("badge") as ProductBadge) ?? "");
-  const [sort, setSort] = useState<SortKey>((searchParams.get("sort") as SortKey) ?? "default");
+  const [filterBadge, setFilterBadge] = useState<ProductBadge | "">("");
+  const [sort, setSort] = useState<SortKey>("default");
   const [show, setShow] = useState<ShowCount>(24);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [compare, setCompare] = useState<string[]>([]);
@@ -86,11 +107,23 @@ function ShopContent() {
     setPage(1);
   }
 
+  const applyInitialParams = useCallback((params: InitialParams) => {
+    if (appliedInitialParams.current) return;
+    appliedInitialParams.current = true;
+    if (params.category) setFilterCategory(params.category);
+    if (params.badge) setFilterBadge(params.badge);
+    if (params.sort !== "default") setSort(params.sort);
+  }, []);
+
   const inStockCount = uniqueProducts.filter((p) => p.variants.some((v) => v.inStock)).length;
   const outOfStockCount = uniqueProducts.filter((p) => p.variants.every((v) => !v.inStock)).length;
 
   return (
     <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-10">
+      <Suspense fallback={null}>
+        <ShopParamsBridge onReady={applyInitialParams} />
+      </Suspense>
+
       <div className="mb-8">
         <p className="label-upper mb-2">Research Compounds</p>
         <h1
@@ -397,9 +430,5 @@ function ShopContent() {
 }
 
 export default function ShopPage() {
-  return (
-    <Suspense>
-      <ShopContent />
-    </Suspense>
-  );
+  return <ShopContent />;
 }

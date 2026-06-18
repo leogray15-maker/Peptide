@@ -201,7 +201,7 @@ function ResultRow({
       className="flex items-center justify-between p-4 rounded-lg"
       style={{
         background: highlight ? "var(--accent-dim)" : "var(--surface-2)",
-        border: `1px solid ${highlight ? "rgba(124,111,240,0.3)" : "var(--line)"}`,
+        border: `1px solid ${highlight ? "rgba(111,99,216,0.3)" : "var(--line)"}`,
       }}
     >
       <p className="text-sm" style={{ color: "var(--muted)" }}>{label}</p>

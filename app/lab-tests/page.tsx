@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { FileText, Search, Download } from "lucide-react";
 import { Section, SectionHead } from "@/components/ui/Section";
-import { Badge } from "@/components/ui/Badge";
 import LabTestsClient from "./LabTestsClient";
 
 export const metadata: Metadata = {

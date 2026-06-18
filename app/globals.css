@@ -11,9 +11,9 @@
   --muted:     #8A8A8F;
   --subtle:    #4A4A50;
 
-  --accent:       #7C6FF0;
-  --accent-dim:   rgba(124, 111, 240, 0.15);
-  --accent-glow:  rgba(124, 111, 240, 0.35);
+  --accent:       #6F63D8;
+  --accent-dim:   rgba(111, 99, 216, 0.15);
+  --accent-glow:  rgba(111, 99, 216, 0.35);
 
   --line:      rgba(255, 255, 255, 0.08);
   --line-med:  rgba(255, 255, 255, 0.14);

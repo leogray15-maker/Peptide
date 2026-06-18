@@ -2,9 +2,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ANNOUNCEMENTS } from "@/lib/config";
+import { useLocalStorageItem, writeLocalStorageItem } from "@/lib/useLocalStorage";
+
+const DISMISS_KEY = "arcane_announce_dismissed";
 
 export default function AnnouncementBar() {
-  const [dismissed, setDismissed] = useState(false);
+  const dismissed = useLocalStorageItem(DISMISS_KEY) !== null;
   const [idx, setIdx] = useState(0);
 
   const next = useCallback(() => setIdx((i) => (i + 1) % ANNOUNCEMENTS.length), []);
@@ -18,10 +21,6 @@ export default function AnnouncementBar() {
     const t = setInterval(next, 4000);
     return () => clearInterval(t);
   }, [dismissed, next]);
-
-  useEffect(() => {
-    setDismissed(!!localStorage.getItem("arcane_announce_dismissed"));
-  }, []);
 
   if (dismissed) return null;
 
@@ -53,10 +52,7 @@ export default function AnnouncementBar() {
       </button>
 
       <button
-        onClick={() => {
-          setDismissed(true);
-          localStorage.setItem("arcane_announce_dismissed", "1");
-        }}
+        onClick={() => writeLocalStorageItem(DISMISS_KEY, "1")}
         aria-label="Dismiss announcement"
         className="absolute right-2 opacity-70 hover:opacity-100 transition-opacity"
       >

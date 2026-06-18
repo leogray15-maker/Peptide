@@ -1,21 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useLocalStorageItem, writeLocalStorageItem } from "@/lib/useLocalStorage";
 
 const AGE_KEY = "arcane_age_verified";
 const TERMS_KEY = "arcane_terms_accepted";
 
 export default function ComplianceGate() {
-  const [step, setStep] = useState<"age" | "terms" | "done">("done");
-
-  useEffect(() => {
-    const ageOk = !!localStorage.getItem(AGE_KEY);
-    const termsOk = !!localStorage.getItem(TERMS_KEY);
-    if (!ageOk) {
-      setStep("age");
-    } else if (!termsOk) {
-      setStep("terms");
-    }
-  }, []);
+  const ageOk = useLocalStorageItem(AGE_KEY) !== null;
+  const termsOk = useLocalStorageItem(TERMS_KEY) !== null;
+  const step: "age" | "terms" | "done" = !ageOk ? "age" : !termsOk ? "terms" : "done";
 
   if (step === "done") return null;
 
@@ -29,11 +21,7 @@ export default function ComplianceGate() {
     >
       {step === "age" && (
         <AgeGate
-          onAccept={() => {
-            localStorage.setItem(AGE_KEY, "1");
-            const termsOk = !!localStorage.getItem(TERMS_KEY);
-            setStep(termsOk ? "done" : "terms");
-          }}
+          onAccept={() => writeLocalStorageItem(AGE_KEY, "1")}
           onDecline={() => {
             window.location.href = "https://www.google.com";
           }}
@@ -42,10 +30,7 @@ export default function ComplianceGate() {
 
       {step === "terms" && (
         <TermsModal
-          onAccept={() => {
-            localStorage.setItem(TERMS_KEY, "1");
-            setStep("done");
-          }}
+          onAccept={() => writeLocalStorageItem(TERMS_KEY, "1")}
         />
       )}
     </div>

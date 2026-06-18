@@ -59,12 +59,14 @@ export default function ProductCard({
       {/* Compare toggle */}
       {onCompareToggle && (
         <label className="absolute top-3 left-3 z-10 flex items-center gap-1.5 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={!!compareSelected}
-            onChange={() => onCompareToggle(product.slug)}
-            className="accent-[var(--accent)] w-3.5 h-3.5"
-          />
+          <span className="flex items-center justify-center w-6 h-6 -m-1">
+            <input
+              type="checkbox"
+              checked={!!compareSelected}
+              onChange={() => onCompareToggle(product.slug)}
+              className="accent-[var(--accent)] w-3.5 h-3.5"
+            />
+          </span>
           <span className="text-[10px] font-semibold" style={{ color: "var(--muted)" }}>
             Compare
           </span>

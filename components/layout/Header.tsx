@@ -99,11 +99,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, []);
-
   function openItem(label: string) {
     if (closeTimer.current) clearTimeout(closeTimer.current);
     setOpenMenu(label);

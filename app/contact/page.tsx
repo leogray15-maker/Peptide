@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Section, SectionHead } from "@/components/ui/Section";
 import { Mail, MessageSquare } from "lucide-react";
 import { WHATSAPP_NUMBER } from "@/lib/config";

@@ -1,21 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useLocalStorageItem, writeLocalStorageItem } from "@/lib/useLocalStorage";
 
 const COOKIE_KEY = "arcane_cookie_consent";
 
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    if (!localStorage.getItem(COOKIE_KEY)) setVisible(true);
-  }, []);
+  const visible = useLocalStorageItem(COOKIE_KEY) === null;
 
   if (!visible) return null;
 
   function accept(type: "essential" | "all") {
-    localStorage.setItem(COOKIE_KEY, type);
-    setVisible(false);
+    writeLocalStorageItem(COOKIE_KEY, type);
   }
 
   return (
@@ -33,7 +28,7 @@ export default function CookieBanner() {
         We use essential cookies to operate this site. No analytics or tracking
         cookies are set without your consent.{" "}
         <Link href="/cookies-policy" className="underline" style={{ color: "var(--accent)" }}>
-          Learn more
+          Read our cookie policy
         </Link>
       </p>
       <div className="flex gap-2">

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { CATEGORIES, CATEGORY_SLUGS, getProductsByCategory, type Category } from "@/data/products";
+import { CATEGORY_SLUGS, getProductsByCategory, type Category } from "@/data/products";
 import ProductCard from "@/components/shop/ProductCard";
 
 interface Props {

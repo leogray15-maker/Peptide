@@ -64,7 +64,7 @@ export default function HomePage() {
         {/* Accent glow */}
         <div
           className="pointer-events-none absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full"
-          style={{ background: "radial-gradient(circle, rgba(124,111,240,0.1) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(111,99,216,0.1) 0%, transparent 70%)" }}
           aria-hidden="true"
         />
 
