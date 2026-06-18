@@ -4,12 +4,15 @@ import Image from "next/image";
 import { Trash2, ShoppingBag } from "lucide-react";
 import { useCart, lineTotal } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { PriceGate } from "@/components/ui/PriceGate";
 import { getBulkDiscount } from "@/lib/config";
 import { FREE_SHIPPING_THRESHOLD_GBP } from "@/lib/config";
 
 export default function CartPage() {
   const { items, removeItem, setQty, total, count } = useCart();
   const { format } = useCurrency();
+  const { user } = useAuth();
 
   const freeShipping = total >= FREE_SHIPPING_THRESHOLD_GBP;
   const shippingRemaining = FREE_SHIPPING_THRESHOLD_GBP - total;
@@ -145,12 +148,14 @@ export default function CartPage() {
                     </button>
                   </div>
 
-                  <span
-                    className="text-sm font-bold"
-                    style={{ fontFamily: "var(--font-syne), sans-serif" }}
-                  >
-                    {format(lt)}
-                  </span>
+                  <PriceGate size="sm">
+                    <span
+                      className="text-sm font-bold"
+                      style={{ fontFamily: "var(--font-syne), sans-serif" }}
+                    >
+                      {format(lt)}
+                    </span>
+                  </PriceGate>
 
                   <button
                     onClick={() => removeItem(item.variantSku)}
@@ -182,7 +187,7 @@ export default function CartPage() {
             <div className="flex flex-col gap-3 mb-4">
               <div className="flex justify-between text-sm">
                 <span style={{ color: "var(--muted)" }}>Subtotal</span>
-                <span>{format(total)}</span>
+                <PriceGate size="sm"><span>{format(total)}</span></PriceGate>
               </div>
               <div className="flex justify-between text-sm">
                 <span style={{ color: "var(--muted)" }}>Shipping (UK)</span>
@@ -195,21 +200,33 @@ export default function CartPage() {
                 style={{ borderColor: "var(--line)" }}
               >
                 <span>Total</span>
-                <span
-                  style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: "1.125rem" }}
-                >
-                  {format(total)}
-                </span>
+                <PriceGate size="md">
+                  <span
+                    style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: "1.125rem" }}
+                  >
+                    {format(total)}
+                  </span>
+                </PriceGate>
               </div>
             </div>
 
-            <Link
-              href="/checkout"
-              className="block text-center py-3.5 rounded font-semibold tracking-wide transition-all hover:brightness-110"
-              style={{ background: "var(--accent)", color: "#fff" }}
-            >
-              PROCEED TO CHECKOUT
-            </Link>
+            {user ? (
+              <Link
+                href="/checkout"
+                className="block text-center py-3.5 rounded font-semibold tracking-wide transition-all hover:brightness-110"
+                style={{ background: "var(--accent)", color: "#fff" }}
+              >
+                PROCEED TO CHECKOUT
+              </Link>
+            ) : (
+              <Link
+                href="/account"
+                className="block text-center py-3.5 rounded font-semibold tracking-wide transition-all hover:brightness-110"
+                style={{ background: "var(--accent)", color: "#fff" }}
+              >
+                SIGN IN TO CHECKOUT
+              </Link>
+            )}
 
             <p className="mt-3 text-xs text-center" style={{ color: "var(--subtle)" }}>
               Secure checkout — bank transfer or crypto

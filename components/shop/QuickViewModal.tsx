@@ -7,8 +7,10 @@ import type { Product } from "@/data/products";
 import { Modal } from "@/components/ui/Modal";
 import { Badge, PRODUCT_BADGE_MAP } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { PriceGate } from "@/components/ui/PriceGate";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -18,6 +20,7 @@ interface QuickViewModalProps {
 export default function QuickViewModal({ product, onClose }: QuickViewModalProps) {
   const { addItem } = useCart();
   const { format } = useCurrency();
+  const { user } = useAuth();
   const [selectedSku, setSelectedSku] = useState<string>(product?.variants[0]?.sku ?? "");
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
@@ -116,12 +119,14 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
           <div className="flex items-center gap-4">
             <div>
               {selected?.priceGBP !== null && selected?.priceGBP !== undefined ? (
-                <span
-                  className="text-2xl font-bold"
-                  style={{ fontFamily: "var(--font-syne), sans-serif" }}
-                >
-                  {format(selected.priceGBP)}
-                </span>
+                <PriceGate>
+                  <span
+                    className="text-2xl font-bold"
+                    style={{ fontFamily: "var(--font-syne), sans-serif" }}
+                  >
+                    {format(selected.priceGBP)}
+                  </span>
+                </PriceGate>
               ) : (
                 <span style={{ color: "var(--muted)" }}>Price on enquiry</span>
               )}
@@ -152,14 +157,25 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
           </div>
 
           <div className="flex gap-2">
-            <Button
-              onClick={handleAdd}
-              disabled={!selected?.inStock || selected?.priceGBP === null}
-              className="flex-1"
-            >
-              <ShoppingCart size={16} />
-              {added ? "Added ✓" : "Add to Cart"}
-            </Button>
+            {!user ? (
+              <Link
+                href="/account"
+                onClick={onClose}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded font-semibold text-sm transition-all hover:brightness-110"
+                style={{ background: "var(--accent)", color: "#fff" }}
+              >
+                Sign In to Order
+              </Link>
+            ) : (
+              <Button
+                onClick={handleAdd}
+                disabled={!selected?.inStock || selected?.priceGBP === null}
+                className="flex-1"
+              >
+                <ShoppingCart size={16} />
+                {added ? "Added ✓" : "Add to Cart"}
+              </Button>
+            )}
             <Link
               href={`/product/${product.slug}`}
               onClick={onClose}

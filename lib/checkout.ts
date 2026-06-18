@@ -1,6 +1,6 @@
 // ─── Checkout abstraction ─────────────────────────────────────────────────────
-// All payment-provider logic is isolated here. To add Stripe/Crypto/Bank
-// wire-up, edit only this file — the UI never calls payment APIs directly.
+// Bank transfer and crypto only — no card processor. All payment-method
+// logic is isolated here; the UI never builds payment instructions itself.
 
 import type { CartItem } from "@/contexts/CartContext";
 import type { CurrencyCode } from "@/lib/config";

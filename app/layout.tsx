@@ -3,6 +3,7 @@ import { Inter, Syne } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -62,17 +63,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <CurrencyProvider>
-          <CartProvider>
-            <ComplianceGate />
-            <CookieBanner />
-            <AnnouncementBar />
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <WhatsAppButton />
-          </CartProvider>
-        </CurrencyProvider>
+        <AuthProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <ComplianceGate />
+              <CookieBanner />
+              <AnnouncementBar />
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+              <WhatsAppButton />
+            </CartProvider>
+          </CurrencyProvider>
+        </AuthProvider>
       </body>
     </html>
   );

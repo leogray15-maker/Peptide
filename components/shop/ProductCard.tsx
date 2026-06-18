@@ -6,8 +6,10 @@ import { ShoppingCart, Eye, Heart } from "lucide-react";
 import type { Product } from "@/data/products";
 import { Badge, PRODUCT_BADGE_MAP } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { PriceGate } from "@/components/ui/PriceGate";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ProductCardProps {
   product: Product;
@@ -24,6 +26,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const { addItem } = useCart();
   const { format } = useCurrency();
+  const { user } = useAuth();
   const [addedSku, setAddedSku] = useState<string | null>(null);
 
   const inStockVariants = product.variants.filter((v) => v.inStock);
@@ -153,17 +156,19 @@ export default function ProductCard({
             {isAllOutOfStock ? (
               <span className="text-sm" style={{ color: "var(--muted)" }}>Out of stock</span>
             ) : displayPrice !== null ? (
-              <div>
-                <span className="text-xs" style={{ color: "var(--muted)" }}>
-                  {hasMultipleVariants ? "from " : ""}
-                </span>
-                <span
-                  className="text-base font-bold"
-                  style={{ color: "var(--text)", fontFamily: "var(--font-syne), sans-serif" }}
-                >
-                  {format(displayPrice)}
-                </span>
-              </div>
+              <PriceGate>
+                <div>
+                  <span className="text-xs" style={{ color: "var(--muted)" }}>
+                    {hasMultipleVariants ? "from " : ""}
+                  </span>
+                  <span
+                    className="text-base font-bold"
+                    style={{ color: "var(--text)", fontFamily: "var(--font-syne), sans-serif" }}
+                  >
+                    {format(displayPrice)}
+                  </span>
+                </div>
+              </PriceGate>
             ) : (
               <span className="text-sm" style={{ color: "var(--muted)" }}>Price on enquiry</span>
             )}
@@ -185,6 +190,14 @@ export default function ProductCard({
                 style={{ borderColor: "var(--line-med)", color: "var(--muted)" }}
               >
                 {hasMultipleVariants ? "Select" : "View"}
+              </Link>
+            ) : !user ? (
+              <Link
+                href="/account"
+                className="px-3 py-1.5 rounded text-xs font-semibold transition-all hover:brightness-110"
+                style={{ background: "var(--accent)", color: "#fff" }}
+              >
+                Sign In
               </Link>
             ) : hasMultipleVariants ? (
               <Link

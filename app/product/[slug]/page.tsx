@@ -8,8 +8,10 @@ import { getProductBySlug, getProductsByCategory, type Variant } from "@/data/pr
 import { Button } from "@/components/ui/Button";
 import { Badge, PRODUCT_BADGE_MAP } from "@/components/ui/Badge";
 import { Table } from "@/components/ui/Table";
+import { PriceGate } from "@/components/ui/PriceGate";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { BULK_TIERS, getBulkDiscount } from "@/lib/config";
 import ProductCard from "@/components/shop/ProductCard";
 
@@ -25,6 +27,7 @@ export default function ProductPage({ params }: Props) {
 
   const { addItem } = useCart();
   const { format } = useCurrency();
+  const { user } = useAuth();
 
   const [selectedSku, setSelectedSku] = useState<string>(
     product.variants.find((v) => v.inStock && v.priceGBP !== null)?.sku ??
@@ -240,25 +243,27 @@ export default function ProductPage({ params }: Props) {
           {/* Price + quantity */}
           <div>
             {finalPrice !== null ? (
-              <div className="flex items-end gap-3">
-                <span
-                  className="text-4xl font-bold"
-                  style={{ fontFamily: "var(--font-syne), sans-serif" }}
-                >
-                  {format(finalPrice)}
-                </span>
-                {discount > 0 && (
-                  <>
-                    <span
-                      className="text-xl line-through"
-                      style={{ color: "var(--muted)" }}
-                    >
-                      {format(basePrice!)}
-                    </span>
-                    <Badge variant="green">{discount}% off</Badge>
-                  </>
-                )}
-              </div>
+              <PriceGate size="lg">
+                <div className="flex items-end gap-3">
+                  <span
+                    className="text-4xl font-bold"
+                    style={{ fontFamily: "var(--font-syne), sans-serif" }}
+                  >
+                    {format(finalPrice)}
+                  </span>
+                  {discount > 0 && (
+                    <>
+                      <span
+                        className="text-xl line-through"
+                        style={{ color: "var(--muted)" }}
+                      >
+                        {format(basePrice!)}
+                      </span>
+                      <Badge variant="green">{discount}% off</Badge>
+                    </>
+                  )}
+                </div>
+              </PriceGate>
             ) : (
               <p style={{ color: "var(--muted)" }}>Price on enquiry — contact us</p>
             )}
@@ -294,36 +299,48 @@ export default function ProductPage({ params }: Props) {
               </button>
             </div>
 
-            <Button
-              size="lg"
-              onClick={handleAdd}
-              disabled={!selected?.inStock || finalPrice === null}
-              className="flex-1"
-            >
-              <ShoppingCart size={18} />
-              {added ? "Added to Cart ✓" : "Add to Cart"}
-            </Button>
+            {user ? (
+              <Button
+                size="lg"
+                onClick={handleAdd}
+                disabled={!selected?.inStock || finalPrice === null}
+                className="flex-1"
+              >
+                <ShoppingCart size={18} />
+                {added ? "Added to Cart ✓" : "Add to Cart"}
+              </Button>
+            ) : (
+              <Link
+                href="/account"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded font-semibold text-sm tracking-wide transition-all hover:brightness-110"
+                style={{ background: "var(--accent)", color: "#fff" }}
+              >
+                Sign In to Order
+              </Link>
+            )}
           </div>
 
           {/* Bulk discount table */}
           {finalPrice !== null && (
-            <div>
-              <p className="label-upper mb-3">Volume Discounts</p>
-              <Table
-                keyField="minQty"
-                compact
-                columns={[
-                  { header: "Qty", accessor: (r) => `${r.minQty}–${r.maxQty === Infinity ? "+" : r.maxQty}` },
-                  { header: "Discount", accessor: (r) => `${r.discountPct}%` },
-                  {
-                    header: "Price/unit",
-                    accessor: (r) => format(basePrice! * (1 - r.discountPct / 100)),
-                    align: "right",
-                  },
-                ]}
-                rows={BULK_TIERS}
-              />
-            </div>
+            <PriceGate>
+              <div>
+                <p className="label-upper mb-3">Volume Discounts</p>
+                <Table
+                  keyField="minQty"
+                  compact
+                  columns={[
+                    { header: "Qty", accessor: (r) => `${r.minQty}–${r.maxQty === Infinity ? "+" : r.maxQty}` },
+                    { header: "Discount", accessor: (r) => `${r.discountPct}%` },
+                    {
+                      header: "Price/unit",
+                      accessor: (r) => format(basePrice! * (1 - r.discountPct / 100)),
+                      align: "right",
+                    },
+                  ]}
+                  rows={BULK_TIERS}
+                />
+              </div>
+            </PriceGate>
           )}
 
           {/* Trust signals */}

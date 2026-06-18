@@ -5,6 +5,7 @@ import { Search, ShoppingCart, User, Menu, X, ChevronDown, Globe } from "lucide-
 import Logo from "./Logo";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
 import type { CurrencyCode } from "@/lib/config";
 
 // ─── Mega-menu data ───────────────────────────────────────────────────────────
@@ -89,6 +90,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { count } = useCart();
   const { currency, setCurrency, currencies } = useCurrency();
+  const { user } = useAuth();
   const [currencyOpen, setCurrencyOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -246,11 +248,17 @@ export default function Header() {
           {/* Account */}
           <Link
             href="/account"
-            aria-label="Account"
-            className="p-2 rounded transition-colors hidden sm:block"
-            style={{ color: "var(--muted)" }}
+            aria-label={user ? `Account — signed in as ${user.email}` : "Sign in"}
+            className="relative p-2 rounded transition-colors hidden sm:block"
+            style={{ color: user ? "var(--accent)" : "var(--muted)" }}
           >
             <User size={18} />
+            {user && (
+              <span
+                className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+                style={{ background: "var(--green)" }}
+              />
+            )}
           </Link>
 
           {/* Cart */}
@@ -348,9 +356,18 @@ export default function Header() {
             ))}
 
             <Link
+              href="/account"
+              onClick={() => setMobileOpen(false)}
+              className="mt-6 block text-center py-3 rounded font-semibold border"
+              style={{ borderColor: "var(--line-med)", color: user ? "var(--accent)" : "var(--text)" }}
+            >
+              {user ? `Account — ${user.email}` : "Sign In"}
+            </Link>
+
+            <Link
               href="/shop"
               onClick={() => setMobileOpen(false)}
-              className="mt-6 block text-center py-3 rounded font-semibold tracking-wide"
+              className="mt-3 block text-center py-3 rounded font-semibold tracking-wide"
               style={{ background: "var(--accent)", color: "#fff" }}
             >
               ORDER PEPTIDES

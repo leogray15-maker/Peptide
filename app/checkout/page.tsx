@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Copy, Check, Bitcoin, Building2, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
 import { Button } from "@/components/ui/Button";
 
@@ -12,10 +13,12 @@ type Step = "details" | "payment" | "confirm";
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
   const { format } = useCurrency();
+  const { user, loading: authLoading } = useAuth();
 
   const [step, setStep] = useState<Step>("details");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const email = emailInput || user?.email || "";
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("bank_transfer");
   const [loading, setLoading] = useState(false);
@@ -48,6 +51,23 @@ export default function CheckoutPage() {
     navigator.clipboard.writeText(text);
     setCopied(key);
     setTimeout(() => setCopied(null), 2000);
+  }
+
+  if (!authLoading && !user && step !== "confirm") {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center">
+        <p className="mb-4" style={{ color: "var(--muted)" }}>
+          Please sign in to view prices and complete checkout.
+        </p>
+        <Link
+          href="/account"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded font-semibold"
+          style={{ background: "var(--accent)", color: "#fff" }}
+        >
+          Sign In
+        </Link>
+      </div>
+    );
   }
 
   if (items.length === 0 && step !== "confirm") {
@@ -105,7 +125,7 @@ export default function CheckoutPage() {
 
               <div className="flex flex-col gap-4">
                 <Field label="Full Name" value={name} onChange={setName} placeholder="Dr. Jane Smith" />
-                <Field label="Email Address" value={email} onChange={setEmail} type="email" placeholder="jane@research-institution.ac.uk" />
+                <Field label="Email Address" value={email} onChange={setEmailInput} type="email" placeholder="jane@research-institution.ac.uk" />
                 <Field
                   label="Shipping Address"
                   value={address}
