@@ -101,22 +101,45 @@ function ShopContent() {
         </h1>
       </div>
 
+      {/* Mobile filter overlay backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 lg:hidden"
+          style={{ background: "rgba(0,0,0,0.6)" }}
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       <div className="flex gap-8">
         {/* ── Sidebar ── */}
         <aside
-          className={`w-64 shrink-0 ${sidebarOpen ? "block" : "hidden"} lg:block`}
+          className={`w-64 shrink-0 lg:block lg:static lg:z-auto lg:translate-x-0 lg:bg-transparent lg:border-0 lg:p-0 lg:max-w-none fixed top-0 left-0 z-50 h-full max-w-[85vw] overflow-y-auto p-6 transition-transform duration-200 ${
+            sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          style={{ background: "var(--bg)", borderRight: "1px solid var(--line)" }}
           aria-label="Filter sidebar"
         >
-          <div className="sticky top-20 flex flex-col gap-6">
+          <div className="flex flex-col gap-6 lg:sticky lg:top-20">
             <div className="flex items-center justify-between">
               <p className="label-upper">Filters</p>
-              <button
-                onClick={resetFilters}
-                className="text-xs underline"
-                style={{ color: "var(--muted)" }}
-              >
-                Reset
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={resetFilters}
+                  className="text-xs underline"
+                  style={{ color: "var(--muted)" }}
+                >
+                  Reset
+                </button>
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden text-xs"
+                  style={{ color: "var(--muted)" }}
+                  aria-label="Close filters"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {/* Price range */}
