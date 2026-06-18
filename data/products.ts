@@ -77,6 +77,7 @@ export interface Product {
 
 const semaglutide: Product = {
   slug: "semaglutide",
+  image: "/products/semaglutide.png",
   name: "Semaglutide",
   synonyms: ["OzempicPeptide", "NovoPeptide", "SM"],
   category: "GLP-1 / Metabolic",
@@ -100,6 +101,7 @@ const semaglutide: Product = {
 
 const tirzepatide: Product = {
   slug: "tirzepatide",
+  image: "/products/tirzepatide.png",
   name: "Tirzepatide",
   synonyms: ["TR", "GIP/GLP-1 dual agonist"],
   category: "GLP-1 / Metabolic",
@@ -126,6 +128,7 @@ const tirzepatide: Product = {
 
 const retatrutide: Product = {
   slug: "retatrutide",
+  image: "/products/retatrutide.png",
   name: "Retatrutide",
   synonyms: ["GGG agonist", "RT", "LY3437943"],
   category: "GLP-1 / Metabolic",
@@ -153,6 +156,7 @@ const retatrutide: Product = {
 
 const mazdutide: Product = {
   slug: "mazdutide",
+  image: "/products/mazdutide.png",
   name: "Mazdutide",
   synonyms: ["IBI362"],
   category: "GLP-1 / Metabolic",
@@ -168,6 +172,7 @@ const mazdutide: Product = {
 
 const survodutide: Product = {
   slug: "survodutide",
+  image: "/products/survodutide.png",
   name: "Survodutide",
   synonyms: ["BI 456906"],
   category: "GLP-1 / Metabolic",
@@ -183,6 +188,7 @@ const survodutide: Product = {
 
 const cagrilintide: Product = {
   slug: "cagrilintide",
+  image: "/products/cagrilintide.png",
   name: "Cagrilintide",
   synonyms: ["AM833", "CGL"],
   category: "GLP-1 / Metabolic",
@@ -201,6 +207,7 @@ const cagrilintide: Product = {
 
 const aod9604: Product = {
   slug: "aod9604",
+  image: "/products/aod9604.png",
   name: "AOD9604",
   synonyms: ["HGH Fragment 176-191", "AOD"],
   category: "GLP-1 / Metabolic",
@@ -216,6 +223,7 @@ const aod9604: Product = {
 
 const sluPP332: Product = {
   slug: "slu-pp-332",
+  image: "/products/slu-pp-332.png",
   name: "SLU-PP-332",
   synonyms: ["ERR agonist"],
   category: "GLP-1 / Metabolic",
@@ -230,6 +238,7 @@ const sluPP332: Product = {
 
 const aminoMQ: Product = {
   slug: "5-amino-1mq",
+  image: "/products/5-amino-1mq.png",
   name: "5-Amino-1MQ",
   synonyms: ["5-amino-1-methylquinolinium", "5AM"],
   category: "GLP-1 / Metabolic",
@@ -246,6 +255,7 @@ const aminoMQ: Product = {
 
 const hgh: Product = {
   slug: "hgh",
+  image: "/products/hgh.png",
   name: "Human Growth Hormone (HGH)",
   synonyms: ["Somatropin", "rHGH"],
   category: "Growth Hormone Secretagogues",
@@ -264,6 +274,7 @@ const hgh: Product = {
 
 const ipamorelin: Product = {
   slug: "ipamorelin",
+  image: "/products/ipamorelin.png",
   name: "Ipamorelin",
   synonyms: ["NNC 26-0161"],
   category: "Growth Hormone Secretagogues",
@@ -283,6 +294,7 @@ const ipamorelin: Product = {
 
 const cjcNoDac: Product = {
   slug: "cjc-1295-no-dac",
+  image: "/products/cjc-1295-no-dac.png",
   name: "CJC-1295 (No DAC)",
   synonyms: ["Modified GRF 1-29", "CJC-1295 without DAC", "Mod GRF"],
   category: "Growth Hormone Secretagogues",
@@ -301,6 +313,7 @@ const cjcNoDac: Product = {
 
 const cjcWithDac: Product = {
   slug: "cjc-1295-with-dac",
+  image: "/products/cjc-1295-with-dac.png",
   name: "CJC-1295 (With DAC)",
   synonyms: ["CJC-1295 DAC", "DAC:GRF"],
   category: "Growth Hormone Secretagogues",
@@ -318,6 +331,7 @@ const cjcWithDac: Product = {
 
 const cjcIpaBlend: Product = {
   slug: "cjc-1295-ipamorelin-blend",
+  image: "/products/cjc-1295-ipamorelin-blend.png",
   name: "CJC-1295 / Ipamorelin Blend",
   synonyms: ["CP Blend"],
   category: "Growth Hormone Secretagogues",
@@ -333,6 +347,7 @@ const cjcIpaBlend: Product = {
 
 const sermorelin: Product = {
   slug: "sermorelin",
+  image: "/products/sermorelin.png",
   name: "Sermorelin",
   synonyms: ["GHRH 1-29", "GRF 1-29"],
   category: "Growth Hormone Secretagogues",
@@ -351,6 +366,7 @@ const sermorelin: Product = {
 
 const tesamorelin: Product = {
   slug: "tesamorelin",
+  image: "/products/tesamorelin.png",
   name: "Tesamorelin",
   synonyms: ["TH9507"],
   category: "Growth Hormone Secretagogues",
@@ -370,6 +386,7 @@ const tesamorelin: Product = {
 
 const ghrp6: Product = {
   slug: "ghrp-6",
+  image: "/products/ghrp-6.png",
   name: "GHRP-6",
   synonyms: ["Growth Hormone Releasing Peptide-6", "His-DTrp-Ala-Trp-DPhe-Lys-NH2"],
   category: "Growth Hormone Secretagogues",
@@ -388,6 +405,7 @@ const ghrp6: Product = {
 
 const igf1lr3: Product = {
   slug: "igf-1-lr3",
+  image: "/products/igf-1-lr3.png",
   name: "IGF-1 LR3",
   synonyms: ["Long R3 IGF-1", "Insulin-like Growth Factor-1 LR3"],
   category: "Growth Hormone Secretagogues",
@@ -406,6 +424,7 @@ const igf1lr3: Product = {
 
 const igfDes: Product = {
   slug: "igf-des",
+  image: "/products/igf-des.png",
   name: "IGF-1 DES(1-3)",
   synonyms: ["des(1-3)IGF-1", "IGF-DES"],
   category: "Growth Hormone Secretagogues",
@@ -421,6 +440,7 @@ const igfDes: Product = {
 
 const hmg: Product = {
   slug: "hmg",
+  image: "/products/hmg.png",
   name: "Human Menopausal Gonadotropin (HMG)",
   synonyms: ["Menotropin", "G75"],
   category: "Growth Hormone Secretagogues",
@@ -435,6 +455,7 @@ const hmg: Product = {
 
 const hcg: Product = {
   slug: "hcg",
+  image: "/products/hcg.png",
   name: "Human Chorionic Gonadotropin (HCG)",
   synonyms: ["hCG", "Choriogonadotropin alfa"],
   category: "Growth Hormone Secretagogues",
@@ -454,6 +475,7 @@ const hcg: Product = {
 
 const bpc157: Product = {
   slug: "bpc-157",
+  image: "/products/bpc-157.png",
   name: "BPC-157",
   synonyms: ["Body Protection Compound-157", "PL 14736"],
   category: "Tissue & Repair",
@@ -473,6 +495,7 @@ const bpc157: Product = {
 
 const tb500: Product = {
   slug: "tb-500",
+  image: "/products/tb-500.png",
   name: "TB-500 (Thymosin Beta-4 Fragment)",
   synonyms: ["Thymosin Beta-4 Frag", "TB4 Fragment"],
   category: "Tissue & Repair",
@@ -492,6 +515,7 @@ const tb500: Product = {
 
 const bpcTbBlend5: Product = {
   slug: "bpc-157-tb-500-blend-5mg",
+  image: "/products/bpc-157-tb-500-blend-5mg.png",
   name: "BPC-157 + TB-500 Blend (5 mg each)",
   synonyms: ["BB10"],
   category: "Tissue & Repair",
@@ -507,6 +531,7 @@ const bpcTbBlend5: Product = {
 
 const bpcTbBlend10: Product = {
   slug: "bpc-157-tb-500-blend-10mg",
+  image: "/products/bpc-157-tb-500-blend-10mg.png",
   name: "BPC-157 + TB-500 Blend (10 mg each)",
   synonyms: ["BB20"],
   category: "Tissue & Repair",
@@ -522,6 +547,7 @@ const bpcTbBlend10: Product = {
 
 const kpv: Product = {
   slug: "kpv",
+  image: "/products/kpv.png",
   name: "KPV",
   synonyms: ["α-MSH tripeptide C-terminal", "Lys-Pro-Val"],
   category: "Tissue & Repair",
@@ -542,6 +568,7 @@ const kpv: Product = {
 
 const selank: Product = {
   slug: "selank",
+  image: "/products/selank.png",
   name: "Selank",
   synonyms: ["TP-7"],
   category: "Cognitive / Nootropic",
@@ -560,6 +587,7 @@ const selank: Product = {
 
 const semax: Product = {
   slug: "semax",
+  image: "/products/semax.png",
   name: "Semax",
   synonyms: ["ACTH(4-7)PGP", "Methionyl-glutamyl-histidyl-phenylalanyl-prolyl-glycyl-proline"],
   category: "Cognitive / Nootropic",
@@ -578,6 +606,7 @@ const semax: Product = {
 
 const cerebrolysin: Product = {
   slug: "cerebrolysin",
+  image: "/products/cerebrolysin.png",
   name: "Cerebrolysin",
   synonyms: ["FPF 1070"],
   category: "Cognitive / Nootropic",
@@ -592,6 +621,7 @@ const cerebrolysin: Product = {
 
 const dsip: Product = {
   slug: "dsip",
+  image: "/products/dsip.png",
   name: "DSIP",
   synonyms: ["Delta Sleep Inducing Peptide", "Delta-Sleep-Inducing Peptide"],
   category: "Cognitive / Nootropic",
@@ -612,6 +642,7 @@ const dsip: Product = {
 
 const mtII: Product = {
   slug: "melanotan-2",
+  image: "/products/melanotan-2.png",
   name: "Melanotan II (MT-II)",
   synonyms: ["MT-2", "Melanotan-2"],
   category: "Melanocortin",
@@ -627,6 +658,7 @@ const mtII: Product = {
 
 const mtI: Product = {
   slug: "melanotan-1",
+  image: "/products/melanotan-1.png",
   name: "Melanotan I (MT-I)",
   synonyms: ["Afamelanotide", "MT-1"],
   category: "Melanocortin",
@@ -642,6 +674,7 @@ const mtI: Product = {
 
 const pt141: Product = {
   slug: "pt-141",
+  image: "/products/pt-141.png",
   name: "PT-141 (Bremelanotide)",
   synonyms: ["Bremelanotide", "PT141"],
   category: "Melanocortin",
@@ -662,6 +695,7 @@ const pt141: Product = {
 
 const epitalon: Product = {
   slug: "epitalon",
+  image: "/products/epitalon.png",
   name: "Epitalon",
   synonyms: ["Epithalon", "Ala-Glu-Asp-Gly", "Epithalamin"],
   category: "Anti-Ageing / Bioregulators",
@@ -680,6 +714,7 @@ const epitalon: Product = {
 
 const thymalin: Product = {
   slug: "thymalin",
+  image: "/products/thymalin.png",
   name: "Thymalin",
   synonyms: ["Thymic extract", "TY"],
   category: "Anti-Ageing / Bioregulators",
@@ -695,6 +730,7 @@ const thymalin: Product = {
 
 const thymosineAlpha1: Product = {
   slug: "thymosin-alpha-1",
+  image: "/products/thymosin-alpha-1.png",
   name: "Thymosin Alpha-1",
   synonyms: ["Tα1", "Thymalfasin", "TA-1"],
   category: "Anti-Ageing / Bioregulators",
@@ -713,6 +749,7 @@ const thymosineAlpha1: Product = {
 
 const pinealon: Product = {
   slug: "pinealon",
+  image: "/products/pinealon.png",
   name: "Pinealon",
   synonyms: ["EDR tripeptide", "Glu-Asp-Arg"],
   category: "Anti-Ageing / Bioregulators",
@@ -732,6 +769,7 @@ const pinealon: Product = {
 
 const pnc27: Product = {
   slug: "pnc-27",
+  image: "/products/pnc-27.png",
   name: "PNC-27",
   synonyms: ["MDM2-binding peptide"],
   category: "Anti-Ageing / Bioregulators",
@@ -749,6 +787,7 @@ const pnc27: Product = {
 
 const nad: Product = {
   slug: "nad-plus",
+  image: "/products/nad-plus.png",
   name: "NAD+",
   synonyms: ["Nicotinamide Adenine Dinucleotide", "NAD"],
   category: "Cellular / Longevity",
@@ -768,6 +807,7 @@ const nad: Product = {
 
 const motsC: Product = {
   slug: "mots-c",
+  image: "/products/mots-c.png",
   name: "MOTS-c",
   synonyms: ["Mitochondrial-derived peptide", "MOTs-c"],
   category: "Cellular / Longevity",
@@ -787,6 +827,7 @@ const motsC: Product = {
 
 const ss31: Product = {
   slug: "ss-31",
+  image: "/products/ss-31.png",
   name: "SS-31",
   synonyms: ["Elamipretide", "MTP-131", "Bendavia"],
   category: "Cellular / Longevity",
@@ -805,6 +846,7 @@ const ss31: Product = {
 
 const ghkCu: Product = {
   slug: "ghk-cu",
+  image: "/products/ghk-cu.png",
   name: "GHK-Cu",
   synonyms: ["Copper peptide", "Glycyl-L-histidyl-L-lysine copper"],
   category: "Anti-Ageing / Bioregulators",
@@ -841,6 +883,7 @@ const glutathione: Product = {
 
 const ara290: Product = {
   slug: "ara-290",
+  image: "/products/ara-290.png",
   name: "ARA-290",
   synonyms: ["Cibinetide"],
   category: "Tissue & Repair",
@@ -856,6 +899,7 @@ const ara290: Product = {
 
 const snap8: Product = {
   slug: "snap-8",
+  image: "/products/snap-8.png",
   name: "SNAP-8",
   synonyms: ["Acetyl Glutamyl Heptapeptide-3"],
   category: "Anti-Ageing / Bioregulators",
@@ -870,6 +914,7 @@ const snap8: Product = {
 
 const kisspeptin10: Product = {
   slug: "kisspeptin-10",
+  image: "/products/kisspeptin-10.png",
   name: "Kisspeptin-10",
   synonyms: ["Metastin 45-54", "KP-10"],
   category: "Anti-Ageing / Bioregulators",
@@ -888,6 +933,7 @@ const kisspeptin10: Product = {
 
 const vip: Product = {
   slug: "vip",
+  image: "/products/vip.png",
   name: "VIP (Vasoactive Intestinal Peptide)",
   synonyms: ["VIP"],
   category: "Cognitive / Nootropic",
@@ -906,6 +952,7 @@ const vip: Product = {
 
 const epo: Product = {
   slug: "epo",
+  image: "/products/epo.png",
   name: "Erythropoietin (EPO)",
   synonyms: ["Erythropoietin alpha", "rHuEPO"],
   category: "Other",
@@ -923,6 +970,7 @@ const epo: Product = {
 
 const oxytocin: Product = {
   slug: "oxytocin-acetate",
+  image: "/products/oxytocin-acetate.png",
   name: "Oxytocin Acetate",
   synonyms: ["α-Hypophamine", "OT"],
   category: "Other",
@@ -938,6 +986,7 @@ const oxytocin: Product = {
 
 const dermorphin: Product = {
   slug: "dermorphin",
+  image: "/products/dermorphin.png",
   name: "Dermorphin",
   synonyms: ["Tyr-D-Ala-Phe-Gly-Tyr-Pro-Ser-NH2"],
   category: "Other",
@@ -952,6 +1001,7 @@ const dermorphin: Product = {
 
 const ll37: Product = {
   slug: "ll-37",
+  image: "/products/ll-37.png",
   name: "LL-37",
   synonyms: ["CAP-18 C-terminal fragment", "Human cathelicidin"],
   category: "Tissue & Repair",
@@ -967,6 +1017,7 @@ const ll37: Product = {
 
 const alprostadil: Product = {
   slug: "alprostadil",
+  image: "/products/alprostadil.png",
   name: "Alprostadil",
   synonyms: ["Prostaglandin E1", "PGE1"],
   category: "Other",
@@ -983,6 +1034,7 @@ const alprostadil: Product = {
 
 const glowBlend: Product = {
   slug: "glow-blend",
+  image: "/products/glow-blend.png",
   name: "GLOW",
   synonyms: ["GHK-Cu + TB500 + BPC-157 Stack"],
   category: "Blends & Stacks",
@@ -999,6 +1051,7 @@ const glowBlend: Product = {
 
 const glowLarge: Product = {
   slug: "glow-blend-large",
+  image: "/products/glow-blend-large.png",
   name: "GLOW (Large)",
   synonyms: ["BBG70", "BPC + GHK-Cu + TB500 Large"],
   category: "Blends & Stacks",
@@ -1014,6 +1067,7 @@ const glowLarge: Product = {
 
 const klowBlend: Product = {
   slug: "klow-blend",
+  image: "/products/klow-blend.png",
   name: "KLOW",
   synonyms: ["KLOW80"],
   category: "Blends & Stacks",
@@ -1029,6 +1083,7 @@ const klowBlend: Product = {
 
 const gkpBlend: Product = {
   slug: "gkp-blend",
+  image: "/products/gkp-blend.png",
   name: "GKP",
   synonyms: ["GKP70"],
   category: "Blends & Stacks",
@@ -1044,6 +1099,7 @@ const gkpBlend: Product = {
 
 const cagriSema: Product = {
   slug: "cagrilintide-semaglutide-blend",
+  image: "/products/cagrilintide-semaglutide-blend.png",
   name: "Cagrilintide + Semaglutide Blend",
   synonyms: ["CagriSema", "CS"],
   category: "Blends & Stacks",
@@ -1064,6 +1120,7 @@ const cagriSema: Product = {
 
 const bacteriostaticWater: Product = {
   slug: "bacteriostatic-water",
+  image: "/products/bacteriostatic-water.png",
   name: "Bacteriostatic Water",
   synonyms: ["BW", "0.9% Benzyl Alcohol Water for Injection"],
   category: "Reconstitution & Lab Supplies",
@@ -1076,6 +1133,7 @@ const bacteriostaticWater: Product = {
 
 const aceticAcidWater: Product = {
   slug: "acetic-acid-water",
+  image: "/products/acetic-acid-water.png",
   name: "Amino / Acetic Acid Water",
   synonyms: ["0.1% Acetic Acid Water", "AA Water"],
   category: "Reconstitution & Lab Supplies",
@@ -1088,6 +1146,7 @@ const aceticAcidWater: Product = {
 
 const vitaminB12: Product = {
   slug: "vitamin-b12",
+  image: "/products/vitamin-b12.png",
   name: "Vitamin B12 (Cyanocobalamin)",
   synonyms: ["B12", "Cyanocobalamin"],
   category: "Reconstitution & Lab Supplies",
@@ -1103,6 +1162,7 @@ const vitaminB12: Product = {
 
 const vitaminC: Product = {
   slug: "vitamin-c",
+  image: "/products/vitamin-c.png",
   name: "Vitamin C (Ascorbic Acid)",
   synonyms: ["Ascorbic Acid", "L-Ascorbic Acid"],
   category: "Reconstitution & Lab Supplies",
@@ -1115,6 +1175,7 @@ const vitaminC: Product = {
 
 const lCarnitine: Product = {
   slug: "l-carnitine",
+  image: "/products/l-carnitine.png",
   name: "L-Carnitine",
   synonyms: ["Levocarnitine"],
   category: "Reconstitution & Lab Supplies",
@@ -1127,6 +1188,7 @@ const lCarnitine: Product = {
 
 const methionine: Product = {
   slug: "methionine",
+  image: "/products/methionine.png",
   name: "Methionine",
   synonyms: ["L-Methionine"],
   category: "Reconstitution & Lab Supplies",
