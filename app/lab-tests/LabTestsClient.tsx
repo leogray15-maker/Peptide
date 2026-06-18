@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Search, Download } from "lucide-react";
+import { Search, FileText } from "lucide-react";
 
 interface Batch {
   lot: string;
@@ -8,7 +8,12 @@ interface Batch {
   size: string;
   purity: string;
   date: string;
-  pdf: string;
+}
+
+function certificateRequestHref(b: Batch): string {
+  const subject = `Certificate of Analysis request — ${b.lot}`;
+  const body = `Hi,\n\nCould you send me the Certificate of Analysis for the following batch?\n\nLot number: ${b.lot}\nCompound: ${b.compound}\nSize: ${b.size}\n\nThanks!`;
+  return `mailto:info@arcanepeptides.co.uk?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 export default function LabTestsClient({ batches }: { batches: Batch[] }) {
@@ -101,13 +106,11 @@ export default function LabTestsClient({ batches }: { batches: Batch[] }) {
                   </td>
                   <td className="px-4 py-3">
                     <a
-                      href={b.pdf}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      href={certificateRequestHref(b)}
                       className="inline-flex items-center gap-1.5 text-xs font-semibold transition-colors hover:opacity-80"
                       style={{ color: "var(--accent)" }}
                     >
-                      <Download size={13} /> Download PDF
+                      <FileText size={13} /> Request Certificate
                     </a>
                   </td>
                 </tr>
@@ -118,7 +121,7 @@ export default function LabTestsClient({ batches }: { batches: Batch[] }) {
       </div>
 
       <p className="mt-4 text-xs" style={{ color: "var(--subtle)" }}>
-        TODO: Replace placeholder entries with real batch data and PDF links as stock is validated.
+        Certificates are issued per batch on request — email us the lot number and we&apos;ll send the COA PDF.
       </p>
     </div>
   );

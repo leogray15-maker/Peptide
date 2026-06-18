@@ -73,12 +73,19 @@ export default function HomePage() {
             UK Research Compounds · HPLC Verified
           </p>
 
-          <h1 className="display mb-8" style={{ maxWidth: "900px" }}>
-            Pure
-            <span style={{ color: "var(--accent)" }}>.</span>
-            <br />Research
-            <span style={{ color: "var(--accent)" }}>.</span>
+          <h1 className="display mb-3" style={{ maxWidth: "900px" }}>
+            Elevate
           </h1>
+          <p
+            className="text-2xl sm:text-3xl font-bold mb-8"
+            style={{
+              fontFamily: "var(--font-syne), sans-serif",
+              color: "var(--accent)",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            Arcane Peptides
+          </p>
 
           <p className="text-base sm:text-lg mb-10 max-w-lg" style={{ color: "var(--muted)" }}>
             Beyond the Veil of Research — verified compounds, independent COA on every batch.

@@ -55,22 +55,24 @@ export default function Footer() {
         }}
       >
         <p className="label-upper mb-2" style={{ color: "#E74C3C" }}>
-          ⚠ Critical Notice — Research Use Only
+          Disclaimer
         </p>
         <p className="max-w-4xl">
-          All products listed on this website are sold strictly for{" "}
-          <strong style={{ color: "var(--text)" }}>
-            in-vitro laboratory research purposes only
-          </strong>
-          . They are <strong style={{ color: "var(--text)" }}>not</strong> intended for
-          human or veterinary use, consumption, ingestion, injection, or any therapeutic,
-          diagnostic, or prophylactic purpose. Arcane Peptides is{" "}
-          <strong style={{ color: "var(--text)" }}>not</strong> a pharmacy and does not
-          provide medical advice. Purchasers are solely responsible for ensuring
-          compliance with all applicable laws and regulations in their jurisdiction.
-          Products must only be handled by trained laboratory personnel in an appropriate
-          research environment. By purchasing from this site you confirm you are a
-          qualified researcher and accept full responsibility for proper, lawful use.
+          All peptide products (lyophilised powders) and related materials provided by{" "}
+          <strong style={{ color: "var(--text)" }}>Arcane Peptides</strong> are strictly
+          intended for laboratory research use only. These compounds are not for human or
+          veterinary consumption, and no dosing, medical, or therapeutic guidance is supplied
+          or implied. Arcane Peptides operates in full accordance with UK regulations
+          governing Research-Only chemical supply — all products are supplied exclusively
+          for in-vitro, pre-clinical, and scientific research purposes. We are{" "}
+          <strong style={{ color: "var(--text)" }}>not</strong> a pharmacy and do not
+          endorse, promote, or recommend the use of any product for personal or clinical
+          application. Customers must review our{" "}
+          <a href="/terms" className="underline" style={{ color: "var(--text)" }}>
+            Terms &amp; Conditions
+          </a>{" "}
+          prior to purchase, must be 18 years of age or older, and must be purchasing for
+          scientific research only.
         </p>
       </div>
 
