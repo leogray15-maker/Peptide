@@ -7,10 +7,10 @@ export default function Logo({ className = "" }: { className?: string }) {
       <Image
         src="/logo/arcane-peptides.png"
         alt="Arcane Peptides"
-        width={36}
-        height={36}
+        width={44}
+        height={44}
         priority
-        className="shrink-0 w-9 h-9 transition-transform duration-300 group-hover:rotate-12"
+        className="shrink-0 w-11 h-11 transition-transform duration-300 group-hover:rotate-12"
       />
 
       <span
