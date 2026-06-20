@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Section, SectionHead } from "@/components/ui/Section";
-import { Thermometer, Sun, Droplets, Clock, AlertTriangle } from "lucide-react";
+import { Thermometer, Sun, Droplets, Clock } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Storage & Handling",
@@ -46,16 +46,6 @@ const PROTOCOLS = [
       "Reconstituted solutions: 14–28 days refrigerated (varies by compound).",
       "Open bacteriostatic water vials: discard after 28 days.",
       "Check the lot-specific COA for compound-specific stability data.",
-    ],
-  },
-  {
-    icon: AlertTriangle,
-    heading: "Pre-filled Cartridges (Special Handling)",
-    points: [
-      "Require continuous cold chain: 2–8 °C at all times.",
-      "Do not freeze — freezing will irreversibly damage the pre-filled formulation.",
-      "Must be received via cold-chain delivery and logged in a monitored refrigerator.",
-      "Discard any cartridge that has been above 8 °C for more than 6 hours.",
     ],
   },
 ];

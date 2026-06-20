@@ -46,11 +46,6 @@ const NAV = [
         heading: "Product Formats",
         links: [
           { label: "Lyophilised Vials", href: "/shop?format=Lyophilised+Vial" },
-          {
-            label: "Pre-filled Cartridges",
-            href: "/shop?format=Pre-filled+Cartridge",
-            note: "Requires strict handling protocol",
-          },
           { label: "Blends & Stacks", href: "/bundles" },
           { label: "Reconstitution Supplies", href: "/shop/reconstitution-lab-supplies" },
         ],
@@ -173,18 +168,6 @@ export default function Header() {
                             style={{ color: "var(--text)" }}
                           >
                             {link.label}
-                            {"note" in link && link.note && (
-                              <span
-                                className="ml-2 text-[10px] px-1.5 py-0.5 rounded"
-                                style={{
-                                  background: "var(--amber)",
-                                  color: "#000",
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {link.note}
-                              </span>
-                            )}
                           </Link>
                         ))}
                       </div>

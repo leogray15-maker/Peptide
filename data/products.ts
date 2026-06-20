@@ -44,7 +44,6 @@ export const CATEGORY_SLUGS: Record<Category, string> = {
 
 export type ProductFormat =
   | "Lyophilised Vial"
-  | "Pre-filled Cartridge"
   | "Solution"
   | "Blend"
   | "Supply";

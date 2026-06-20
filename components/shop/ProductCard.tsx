@@ -14,15 +14,11 @@ import { useAuth } from "@/contexts/AuthContext";
 interface ProductCardProps {
   product: Product;
   onQuickView?: (product: Product) => void;
-  compareSelected?: boolean;
-  onCompareToggle?: (slug: string) => void;
 }
 
 export default function ProductCard({
   product,
   onQuickView,
-  compareSelected,
-  onCompareToggle,
 }: ProductCardProps) {
   const { addItem } = useCart();
   const { format } = useCurrency();
@@ -59,23 +55,6 @@ export default function ProductCard({
       className="group relative flex flex-col rounded-lg overflow-hidden transition-all duration-200 hover:border-[var(--line-med)]"
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
     >
-      {/* Compare toggle */}
-      {onCompareToggle && (
-        <label className="absolute top-3 left-3 z-10 flex items-center gap-1.5 cursor-pointer">
-          <span className="flex items-center justify-center w-6 h-6 -m-1">
-            <input
-              type="checkbox"
-              checked={!!compareSelected}
-              onChange={() => onCompareToggle(product.slug)}
-              className="accent-[var(--accent)] w-3.5 h-3.5"
-            />
-          </span>
-          <span className="text-[10px] font-semibold" style={{ color: "var(--muted)" }}>
-            Compare
-          </span>
-        </label>
-      )}
-
       {/* Badges */}
       {product.badges && product.badges.length > 0 && (
         <div className="absolute top-3 right-3 z-10 flex flex-col gap-1">
