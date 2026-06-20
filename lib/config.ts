@@ -10,6 +10,22 @@ export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+4400
 
 export const FREE_SHIPPING_THRESHOLD_GBP = 50;
 
+// ─── Admin / CRM access ──────────────────────────────────────────────────────
+// Emails listed here get access to the /admin CRM dashboard. Keep this in sync
+// with the email(s) hard-coded in firestore.rules (rules cannot read env vars).
+// Override/extend via NEXT_PUBLIC_ADMIN_EMAILS (comma-separated).
+export const ADMIN_EMAILS: string[] = (
+  process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "leogray15@gmail.com"
+)
+  .split(",")
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
+export function isAdminEmail(email: string | null | undefined): boolean {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase());
+}
+
 // Announcement bar messages — rotate client-side
 export const ANNOUNCEMENTS = [
   "Free UK delivery on orders over £50",
