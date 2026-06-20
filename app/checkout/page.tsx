@@ -41,23 +41,20 @@ export default function CheckoutPage() {
         paymentMethod
       );
 
-      // Persist the order to the CRM. Best-effort — a transient failure here
-      // must not stop the customer seeing their payment instructions.
-      try {
-        await saveOrder({
-          orderId: result.orderId,
-          userId: user?.uid ?? null,
-          customerEmail: email,
-          customerName: name,
-          shippingAddress: address,
-          items,
-          totalGBP: total,
-          currency: "GBP",
-          paymentMethod,
-        });
-      } catch (err) {
-        console.error("Failed to persist order", err);
-      }
+      // Persist the order in the background — the customer's payment
+      // instructions must never depend on a Firestore round-trip. The items
+      // snapshot is captured synchronously here, before clearCart() runs.
+      void saveOrder({
+        orderId: result.orderId,
+        userId: user?.uid ?? null,
+        customerEmail: email,
+        customerName: name,
+        shippingAddress: address,
+        items,
+        totalGBP: total,
+        currency: "GBP",
+        paymentMethod,
+      }).catch((err) => console.error("Failed to persist order", err));
 
       setOrder(result);
       clearCart();
