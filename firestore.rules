@@ -1,0 +1,41 @@
+rules_version = '2';
+
+// Arcane Peptides — Firestore security rules
+// Admins are matched by email on the auth token (no Admin SDK / custom claims
+// required). Keep ADMIN emails in sync with lib/config.ts (ADMIN_EMAILS).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower() in ['leogray15@gmail.com'];
+    }
+
+    // ── Customer/account profiles ──
+    match /users/{userId} {
+      allow read:   if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow delete: if isAdmin();
+    }
+
+    // ── Orders ──
+    match /orders/{orderId} {
+      // A customer can read only their own orders; admins read everything.
+      allow read: if isAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+
+      // A customer may create an order only for themselves.
+      allow create: if isSignedIn()
+        && request.resource.data.userId == request.auth.uid;
+
+      // Only admins can change order status / tracking / notes or delete.
+      allow update, delete: if isAdmin();
+    }
+  }
+}

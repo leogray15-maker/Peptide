@@ -1,8 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Package, MessageCircle, LogOut, Mail, Lock } from "lucide-react";
+import { Package, MessageCircle, LogOut, Mail, Lock, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { getUserOrders, ORDER_STATUS_META, type Order } from "@/lib/db/orders";
 import { Button } from "@/components/ui/Button";
 
 function friendlyAuthError(code: string): string {
@@ -27,7 +29,9 @@ function friendlyAuthError(code: string): string {
 }
 
 export default function AccountClient() {
-  const { user, loading, signIn, signUp, signInWithGoogle, signOut } = useAuth();
+  const { user, loading, isAdmin, signIn, signUp, signInWithGoogle, signOut } = useAuth();
+  const { format } = useCurrency();
+  const [orders, setOrders] = useState<Order[] | null>(null);
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -65,6 +69,17 @@ export default function AccountClient() {
     }
   }
 
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    getUserOrders(user.uid)
+      .then((o) => active && setOrders(o))
+      .catch(() => active && setOrders([]));
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
   if (loading) {
     return <p style={{ color: "var(--muted)" }}>Loading…</p>;
   }
@@ -87,6 +102,78 @@ export default function AccountClient() {
           >
             <LogOut size={14} /> Sign Out
           </button>
+        </div>
+
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="flex items-center justify-between gap-4 p-5 rounded-lg border transition-all hover:border-[var(--accent)]"
+            style={{ background: "var(--accent-dim)", borderColor: "var(--accent)" }}
+          >
+            <div className="flex items-center gap-3">
+              <LayoutDashboard size={20} style={{ color: "var(--accent)" }} />
+              <div>
+                <p className="font-bold" style={{ color: "var(--text)", fontFamily: "var(--font-syne), sans-serif" }}>
+                  Admin Dashboard
+                </p>
+                <p className="text-sm" style={{ color: "var(--muted)" }}>
+                  Manage orders and customers.
+                </p>
+              </div>
+            </div>
+            <span style={{ color: "var(--accent)" }}>›</span>
+          </Link>
+        )}
+
+        {/* Order history */}
+        <div
+          className="p-5 rounded-lg"
+          style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
+        >
+          <p className="label-upper mb-4">Your Orders</p>
+          {orders === null ? (
+            <p className="text-sm" style={{ color: "var(--muted)" }}>Loading orders…</p>
+          ) : orders.length === 0 ? (
+            <p className="text-sm" style={{ color: "var(--muted)" }}>
+              No orders yet.{" "}
+              <Link href="/shop" className="underline" style={{ color: "var(--accent)" }}>
+                Start shopping
+              </Link>
+              .
+            </p>
+          ) : (
+            <div className="flex flex-col divide-y" style={{ borderColor: "var(--line)" }}>
+              {orders.map((o) => {
+                const meta = ORDER_STATUS_META[o.status];
+                return (
+                  <div key={o.orderId} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm truncate" style={{ color: "var(--text)" }}>
+                        {o.orderId}
+                      </p>
+                      <p className="text-xs" style={{ color: "var(--muted)" }}>
+                        {o.createdAt ? o.createdAt.toLocaleDateString() : "—"} ·{" "}
+                        {o.items.reduce((n, i) => n + i.qty, 0)} item
+                        {o.items.reduce((n, i) => n + i.qty, 0) !== 1 ? "s" : ""}
+                        {o.trackingNumber ? ` · Tracking ${o.trackingNumber}` : ""}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                        {format(o.totalGBP)}
+                      </span>
+                      <span
+                        className="text-[10px] font-semibold px-2 py-1 rounded"
+                        style={{ background: `${meta.color}22`, color: meta.color }}
+                      >
+                        {meta.label}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">

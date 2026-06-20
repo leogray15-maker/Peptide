@@ -6,6 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
+import { saveOrder } from "@/lib/db/orders";
 import { Button } from "@/components/ui/Button";
 
 type Step = "details" | "payment" | "confirm";
@@ -39,6 +40,25 @@ export default function CheckoutPage() {
         },
         paymentMethod
       );
+
+      // Persist the order to the CRM. Best-effort — a transient failure here
+      // must not stop the customer seeing their payment instructions.
+      try {
+        await saveOrder({
+          orderId: result.orderId,
+          userId: user?.uid ?? null,
+          customerEmail: email,
+          customerName: name,
+          shippingAddress: address,
+          items,
+          totalGBP: total,
+          currency: "GBP",
+          paymentMethod,
+        });
+      } catch (err) {
+        console.error("Failed to persist order", err);
+      }
+
       setOrder(result);
       clearCart();
       setStep("confirm");

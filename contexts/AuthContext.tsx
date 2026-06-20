@@ -15,10 +15,13 @@ import {
   type User,
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
+import { isAdminEmail } from "@/lib/config";
+import { ensureUserProfile } from "@/lib/db/users";
 
 interface AuthCtx {
   user: User | null;
   loading: boolean;
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
@@ -35,6 +38,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      // Mirror the auth user into Firestore (best-effort — never blocks sign-in).
+      if (u) {
+        ensureUserProfile(u).catch(() => {
+          /* profile sync is non-critical */
+        });
+      }
     });
     return unsubscribe;
   }, []);
@@ -44,6 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         loading,
+        isAdmin: isAdminEmail(user?.email),
         signIn: async (email, password) => {
           await signInWithEmailAndPassword(auth, email, password);
         },
