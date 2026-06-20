@@ -11,7 +11,7 @@ export function Section({ children, className = "", maxWidth = true, id }: Secti
   return (
     <section
       id={id}
-      className={`py-16 sm:py-24 px-4 sm:px-6 ${className}`}
+      className={`py-12 sm:py-16 px-4 sm:px-6 ${className}`}
     >
       {maxWidth ? (
         <div className="max-w-[1280px] mx-auto">{children}</div>
@@ -33,7 +33,7 @@ export function SectionHead({ eyebrow, title, subtitle, align = "left" }: Sectio
   const textAlign = align === "center" ? "text-center items-center" : "";
 
   return (
-    <div className={`flex flex-col gap-2 mb-12 ${textAlign}`}>
+    <div className={`flex flex-col gap-2 mb-8 ${textAlign}`}>
       {eyebrow && <p className="label-upper">{eyebrow}</p>}
       <h2
         className="text-3xl sm:text-4xl font-bold"

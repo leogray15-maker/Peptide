@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FlaskConical, Shield, Zap, Package, Microscope, Calculator } from "lucide-react";
-import { uniqueProducts } from "@/data/products";
+import { uniqueProducts, getProductBySlug, type Product } from "@/data/products";
 import { Section, SectionHead } from "@/components/ui/Section";
 import { StatBlock } from "@/components/ui/StatBlock";
 import { Tabs } from "@/components/ui/Tabs";
@@ -39,16 +39,30 @@ const STATS = [
   { value: "EU+",   label: "Countries Shipped" },
 ];
 
+// Curated best-sellers, shown in this order on the homepage.
+const POPULAR_SLUGS = [
+  "ghk-cu",
+  "bpc-157",
+  "tb-500",
+  "glow-blend",
+  "melanotan-2",
+  "retatrutide",
+  "kpv",
+];
+
 export default function HomePage() {
   const staffPicks = uniqueProducts.filter((p) => p.badges?.includes("Staff Pick")).slice(0, 6);
   const restocked  = uniqueProducts.filter((p) => p.badges?.includes("Restocked")).slice(0, 6);
   const newItems   = uniqueProducts.slice(0, 6);
+  const popular    = POPULAR_SLUGS
+    .map((slug) => getProductBySlug(slug))
+    .filter((p): p is Product => Boolean(p));
 
   return (
     <>
       {/* ── 1. Hero ───────────────────────────────────────────────────────── */}
       <section
-        className="relative flex flex-col justify-center min-h-[90vh] px-4 sm:px-6 py-24 overflow-hidden"
+        className="relative flex flex-col justify-center min-h-[68vh] px-4 sm:px-6 py-16 sm:py-20 overflow-hidden"
         style={{ background: "var(--bg)" }}
       >
         {/* Grid overlay */}
@@ -137,6 +151,18 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* ── Most Popular ─────────────────────────────────────────────────── */}
+      {popular.length > 0 && (
+        <Section>
+          <SectionHead
+            eyebrow="Selling Fast"
+            title="Most Popular"
+            subtitle="Our researchers' most-ordered compounds this season."
+          />
+          <HomeCatalogue products={popular} />
+        </Section>
+      )}
+
       {/* ── 3. Shop by Research Need ─────────────────────────────────────── */}
       <Section>
         <SectionHead
@@ -169,9 +195,9 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── 5. Choose your format ────────────────────────────────────────── */}
+      {/* ── 5. Format ────────────────────────────────────────────────────── */}
       <Section>
-        <SectionHead eyebrow="Formats" title="Choose Your Format" />
+        <SectionHead eyebrow="Format" title="How We Supply" />
         <FormatSelector />
       </Section>
 
