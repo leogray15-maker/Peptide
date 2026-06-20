@@ -1,11 +1,14 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Search, ShoppingCart, User, Menu, X, ChevronDown, Globe } from "lucide-react";
 import Logo from "./Logo";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { uniqueProducts } from "@/data/products";
 import type { CurrencyCode } from "@/lib/config";
 
 // ─── Mega-menu data ───────────────────────────────────────────────────────────
@@ -82,13 +85,33 @@ export default function Header() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const { count } = useCart();
   const { currency, setCurrency, currencies } = useCurrency();
   const { user } = useAuth();
   const [currencyOpen, setCurrencyOpen] = useState(false);
+  const router = useRouter();
   const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return uniqueProducts
+      .filter((p) => {
+        const haystack = [p.name, p.category, p.slug, ...(p.synonyms ?? [])]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(q);
+      })
+      .slice(0, 8);
+  }, [searchQuery]);
+
+  function closeSearch() {
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -183,10 +206,11 @@ export default function Header() {
         <div className="flex items-center gap-3 ml-auto">
           {/* Search */}
           <button
-            onClick={() => setSearchOpen(!searchOpen)}
+            onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
             aria-label="Search"
+            aria-expanded={searchOpen}
             className="p-2 rounded transition-colors hover:text-[var(--accent)]"
-            style={{ color: "var(--muted)" }}
+            style={{ color: searchOpen ? "var(--accent)" : "var(--muted)" }}
           >
             <Search size={18} />
           </button>
@@ -294,14 +318,75 @@ export default function Header() {
           className="border-t px-4 sm:px-6 py-3"
           style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         >
-          <input
-            type="search"
-            placeholder="Search compounds, categories…"
-            autoFocus
-            className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--muted)]"
-            style={{ color: "var(--text)" }}
-            onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
-          />
+          <div className="max-w-[1280px] mx-auto">
+            <div className="flex items-center gap-2">
+              <Search size={16} style={{ color: "var(--muted)" }} className="shrink-0" />
+              <input
+                type="search"
+                placeholder="Search compounds, categories…"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent text-sm outline-none placeholder:text-[var(--muted)]"
+                style={{ color: "var(--text)" }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") closeSearch();
+                  if (e.key === "Enter" && searchResults.length > 0) {
+                    router.push(`/product/${searchResults[0].slug}`);
+                    closeSearch();
+                  }
+                }}
+              />
+              <button
+                onClick={closeSearch}
+                aria-label="Close search"
+                className="shrink-0 p-1 rounded transition-colors hover:text-[var(--accent)]"
+                style={{ color: "var(--muted)" }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Live results */}
+            {searchQuery.trim() && (
+              <div className="mt-3 flex flex-col gap-1">
+                {searchResults.length === 0 ? (
+                  <p className="text-sm py-2" style={{ color: "var(--muted)" }}>
+                    No compounds found for “{searchQuery.trim()}”.
+                  </p>
+                ) : (
+                  searchResults.map((p) => (
+                    <Link
+                      key={p.slug}
+                      href={`/product/${p.slug}`}
+                      onClick={closeSearch}
+                      className="flex items-center gap-3 p-2 rounded transition-colors hover:bg-[var(--surface-2)]"
+                    >
+                      <span
+                        className="relative w-9 h-9 shrink-0 rounded overflow-hidden"
+                        style={{ background: "var(--surface-2)" }}
+                      >
+                        {p.image && (
+                          <Image src={p.image} alt="" fill className="object-cover" sizes="36px" />
+                        )}
+                      </span>
+                      <span className="min-w-0">
+                        <span
+                          className="block text-sm font-semibold truncate"
+                          style={{ color: "var(--text)", fontFamily: "var(--font-syne), sans-serif" }}
+                        >
+                          {p.name}
+                        </span>
+                        <span className="block text-xs truncate" style={{ color: "var(--muted)" }}>
+                          {p.category}
+                        </span>
+                      </span>
+                    </Link>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
