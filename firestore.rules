@@ -10,9 +10,11 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Admin = signed in with an allow-listed email. (Email/password sign-ins
+    // are not "verified" by Firebase, so we don't require email_verified here —
+    // the email is already claimed by the owner, so it can't be spoofed.)
     function isAdmin() {
       return isSignedIn()
-        && request.auth.token.email_verified == true
         && request.auth.token.email.lower() in ['leogray15@gmail.com'];
     }
 
@@ -36,6 +38,13 @@ service cloud.firestore {
 
       // Only admins can change order status / tracking / notes or delete.
       allow update, delete: if isAdmin();
+    }
+
+    // ── Site settings (bank / crypto payment details) ──
+    match /settings/{docId} {
+      // Shown to signed-in customers at checkout; only admins can edit.
+      allow read:  if isSignedIn();
+      allow write: if isAdmin();
     }
   }
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Package, Users, RefreshCw, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, Package, Users, RefreshCw, ShieldAlert, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import {
@@ -13,8 +13,9 @@ import {
   type OrderStatus,
 } from "@/lib/db/orders";
 import { getAllUsers, type UserProfile } from "@/lib/db/users";
+import PaymentSettingsForm from "./PaymentSettingsForm";
 
-type Tab = "orders" | "customers";
+type Tab = "orders" | "customers" | "settings";
 
 export default function AdminClient() {
   const { user, loading, isAdmin } = useAuth();
@@ -33,8 +34,11 @@ export default function AdminClient() {
       const [o, u] = await Promise.all([getAllOrders(), getAllUsers()]);
       setOrders(o);
       setUsers(u);
-    } catch {
-      setError("Could not load CRM data. Check your connection and Firestore rules.");
+    } catch (err) {
+      console.error(err);
+      setOrders([]);
+      setUsers([]);
+      setError(adminErrorMessage(err));
     } finally {
       setRefreshing(false);
     }
@@ -51,8 +55,12 @@ export default function AdminClient() {
         if (!active) return;
         setOrders(o);
         setUsers(u);
-      } catch {
-        if (active) setError("Could not load CRM data. Check your connection and Firestore rules.");
+      } catch (err) {
+        if (!active) return;
+        console.error(err);
+        setOrders([]);
+        setUsers([]);
+        setError(adminErrorMessage(err));
       }
     })();
     return () => {
@@ -149,6 +157,7 @@ export default function AdminClient() {
         {([
           { key: "orders" as const, label: "Orders", icon: Package },
           { key: "customers" as const, label: "Customers", icon: Users },
+          { key: "settings" as const, label: "Payment Settings", icon: Settings },
         ]).map(({ key, label, icon: Icon }) => (
           <button
             key={key}
@@ -164,7 +173,7 @@ export default function AdminClient() {
         ))}
       </div>
 
-      {tab === "orders" ? (
+      {tab === "orders" && (
         orders === null ? (
           <p style={{ color: "var(--muted)" }}>Loading orders…</p>
         ) : orders.length === 0 ? (
@@ -176,46 +185,63 @@ export default function AdminClient() {
             ))}
           </div>
         )
-      ) : users === null ? (
-        <p style={{ color: "var(--muted)" }}>Loading customers…</p>
-      ) : users.length === 0 ? (
-        <p style={{ color: "var(--muted)" }}>No customers yet.</p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {users.map((u) => {
-            const orderCount = (orders ?? []).filter((o) => o.userId === u.uid).length;
-            return (
-              <div
-                key={u.uid}
-                className="flex items-center justify-between gap-4 p-4 rounded-lg"
-                style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm truncate" style={{ color: "var(--text)" }}>
-                    {u.displayName || u.email}
-                    {u.role === "admin" && (
-                      <span
-                        className="ml-2 text-[10px] font-semibold px-1.5 py-0.5 rounded align-middle"
-                        style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
-                      >
-                        ADMIN
-                      </span>
-                    )}
-                  </p>
-                  <p className="text-xs truncate" style={{ color: "var(--muted)" }}>
-                    {u.email} · Joined {u.createdAt ? u.createdAt.toLocaleDateString() : "—"}
-                  </p>
-                </div>
-                <span className="text-xs shrink-0" style={{ color: "var(--muted)" }}>
-                  {orderCount} order{orderCount !== 1 ? "s" : ""}
-                </span>
-              </div>
-            );
-          })}
-        </div>
       )}
+
+      {tab === "customers" && (
+        users === null ? (
+          <p style={{ color: "var(--muted)" }}>Loading customers…</p>
+        ) : users.length === 0 ? (
+          <p style={{ color: "var(--muted)" }}>No customers yet.</p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {users.map((u) => {
+              const orderCount = (orders ?? []).filter((o) => o.userId === u.uid).length;
+              return (
+                <div
+                  key={u.uid}
+                  className="flex items-center justify-between gap-4 p-4 rounded-lg"
+                  style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
+                >
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm truncate" style={{ color: "var(--text)" }}>
+                      {u.displayName || u.email}
+                      {u.role === "admin" && (
+                        <span
+                          className="ml-2 text-[10px] font-semibold px-1.5 py-0.5 rounded align-middle"
+                          style={{ background: "var(--accent-dim)", color: "var(--accent)" }}
+                        >
+                          ADMIN
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs truncate" style={{ color: "var(--muted)" }}>
+                      {u.email} · Joined {u.createdAt ? u.createdAt.toLocaleDateString() : "—"}
+                    </p>
+                  </div>
+                  <span className="text-xs shrink-0" style={{ color: "var(--muted)" }}>
+                    {orderCount} order{orderCount !== 1 ? "s" : ""}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        )
+      )}
+
+      {tab === "settings" && <PaymentSettingsForm />}
     </div>
   );
+}
+
+function adminErrorMessage(err: unknown): string {
+  const code = (err as { code?: string })?.code ?? "";
+  if (code === "permission-denied") {
+    return "Access denied by Firestore rules. Make sure the rules are published and you're signed in as an admin email.";
+  }
+  if (code === "unavailable" || code === "failed-precondition") {
+    return "Could not reach Firestore. Confirm the database has been created in the Firebase console.";
+  }
+  return "Could not load CRM data. Check your connection and that the Firestore rules are published.";
 }
 
 function OrderRow({
