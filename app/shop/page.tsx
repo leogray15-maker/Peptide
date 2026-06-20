@@ -42,7 +42,6 @@ function ShopContent() {
   const [sort, setSort] = useState<SortKey>("default");
   const [show, setShow] = useState<ShowCount>(24);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [compare, setCompare] = useState<string[]>([]);
   const [quickView, setQuickView] = useState<Product | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [page, setPage] = useState(1);
@@ -90,12 +89,6 @@ function ShopContent() {
 
   const paginated = filtered.slice(0, page * show);
   const hasMore = paginated.length < filtered.length;
-
-  function toggleCompare(slug: string) {
-    setCompare((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : prev.length < 4 ? [...prev, slug] : prev
-    );
-  }
 
   function resetFilters() {
     setFilterCategory("");
@@ -352,33 +345,6 @@ function ShopContent() {
             </div>
           </div>
 
-          {/* Compare bar */}
-          {compare.length > 0 && (
-            <div
-              className="flex items-center justify-between px-4 py-3 mb-6 rounded-lg border"
-              style={{ background: "var(--accent-dim)", borderColor: "var(--accent)" }}
-            >
-              <p className="text-sm" style={{ color: "var(--accent)" }}>
-                {compare.length} product{compare.length !== 1 ? "s" : ""} selected for comparison
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setCompare([])}
-                  className="text-xs underline"
-                  style={{ color: "var(--muted)" }}
-                >
-                  Clear
-                </button>
-                <button
-                  className="text-xs font-semibold px-3 py-1.5 rounded"
-                  style={{ background: "var(--accent)", color: "#fff" }}
-                >
-                  Compare
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Product grid */}
           {filtered.length === 0 ? (
             <div className="py-20 text-center" style={{ color: "var(--muted)" }}>
@@ -401,8 +367,6 @@ function ShopContent() {
                     key={product.slug}
                     product={product}
                     onQuickView={setQuickView}
-                    compareSelected={compare.includes(product.slug)}
-                    onCompareToggle={toggleCompare}
                   />
                 ))}
               </div>
