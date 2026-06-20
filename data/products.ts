@@ -94,7 +94,7 @@ const semaglutide: Product = {
     { sku: "SM10", size: "10 mg", priceGBP: 79.95, inStock: true },
     { sku: "SM15", size: "15 mg", priceGBP: 109.95, inStock: true },
     { sku: "SM20", size: "20 mg", priceGBP: 139.95, inStock: true },
-    { sku: "SM30", size: "30 mg", priceGBP: 189.95, inStock: false },
+    { sku: "SM30", size: "30 mg", priceGBP: 189.95, inStock: true },
   ],
 };
 
@@ -118,10 +118,10 @@ const tirzepatide: Product = {
     { sku: "TR15", size: "15 mg", priceGBP: 124.95, inStock: true },
     { sku: "TR20", size: "20 mg", priceGBP: 159.95, inStock: true },
     { sku: "TR30", size: "30 mg", priceGBP: 219.95, inStock: true },
-    { sku: "TR40", size: "40 mg", priceGBP: 279.95, inStock: false },
-    { sku: "TR45", size: "45 mg", priceGBP: 309.95, inStock: false },
-    { sku: "TR50", size: "50 mg", priceGBP: 339.95, inStock: false },
-    { sku: "TR60", size: "60 mg", priceGBP: 399.95, inStock: false },
+    { sku: "TR40", size: "40 mg", priceGBP: 279.95, inStock: true },
+    { sku: "TR45", size: "45 mg", priceGBP: 309.95, inStock: true },
+    { sku: "TR50", size: "50 mg", priceGBP: 339.95, inStock: true },
+    { sku: "TR60", size: "60 mg", priceGBP: 399.95, inStock: true },
   ],
 };
 
@@ -144,12 +144,12 @@ const retatrutide: Product = {
     { sku: "RT10", size: "10 mg", priceGBP: 129.95,  inStock: true },
     { sku: "RT15", size: "15 mg", priceGBP: 169.95,  inStock: true },
     { sku: "RT20", size: "20 mg", priceGBP: 219.95,  inStock: true },
-    { sku: "RT24", size: "24 mg", priceGBP: 249.95,  inStock: false },
-    { sku: "RT30", size: "30 mg", priceGBP: 299.95,  inStock: false },
-    { sku: "RT36", size: "36 mg", priceGBP: 339.95,  inStock: false },
-    { sku: "RT40", size: "40 mg", priceGBP: 389.95,  inStock: false },
-    { sku: "RT50", size: "50 mg", priceGBP: 459.95,  inStock: false },
-    { sku: "RT60", size: "60 mg", priceGBP: 519.95,  inStock: false },
+    { sku: "RT24", size: "24 mg", priceGBP: 249.95,  inStock: true },
+    { sku: "RT30", size: "30 mg", priceGBP: 299.95,  inStock: true },
+    { sku: "RT36", size: "36 mg", priceGBP: 339.95,  inStock: true },
+    { sku: "RT40", size: "40 mg", priceGBP: 389.95,  inStock: true },
+    { sku: "RT50", size: "50 mg", priceGBP: 459.95,  inStock: true },
+    { sku: "RT60", size: "60 mg", priceGBP: 519.95,  inStock: true },
   ],
 };
 
@@ -379,7 +379,7 @@ const tesamorelin: Product = {
   variants: [
     { sku: "TSM5",  size: "5 mg",  priceGBP: 44.95, inStock: true },
     { sku: "TSM10", size: "10 mg", priceGBP: 74.95,   inStock: true },
-    { sku: "TSM15", size: "15 mg", priceGBP: 109.95,   inStock: false },
+    { sku: "TSM15", size: "15 mg", priceGBP: 109.95,   inStock: true },
   ],
 };
 
@@ -839,7 +839,7 @@ const ss31: Product = {
   coaAvailable: true,
   variants: [
     { sku: "2S10", size: "10 mg", priceGBP: 49.95, inStock: true },
-    { sku: "2S50", size: "50 mg", priceGBP: 169.95, inStock: false },
+    { sku: "2S50", size: "50 mg", priceGBP: 169.95, inStock: true },
   ],
 };
 
@@ -1112,7 +1112,7 @@ const cagriSema: Product = {
   coaAvailable: true,
   variants: [
     { sku: "CS5",  size: "10 mg (5 mg + 5 mg)",   priceGBP: 49.95, inStock: true },
-    { sku: "CS10", size: "20 mg (10 mg + 10 mg)",  priceGBP: 89.95, inStock: false },
+    { sku: "CS10", size: "20 mg (10 mg + 10 mg)",  priceGBP: 89.95, inStock: true },
   ],
 };
 
