@@ -16,6 +16,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { withTimeout } from "@/lib/db/util";
 import type { CartItem } from "@/contexts/CartContext";
 import type { CurrencyCode } from "@/lib/config";
 import type { PaymentMethod } from "@/lib/checkout";
@@ -109,22 +110,29 @@ export interface SaveOrderInput {
 }
 
 // Persist a newly placed order. Best-effort: callers should not block the
-// confirmation screen if this throws (e.g. transient network).
+// confirmation screen if this throws (e.g. transient network) — but they should
+// surface the failure so a denied/unsaved order never disappears silently.
+// Wrapped in withTimeout so a request blocked by rules or a stalled transport
+// rejects with a real error code instead of hanging forever.
 export async function saveOrder(input: SaveOrderInput): Promise<void> {
-  await setDoc(doc(db, "orders", input.orderId), {
-    orderId: input.orderId,
-    userId: input.userId,
-    customerEmail: input.customerEmail,
-    customerName: input.customerName,
-    shippingAddress: input.shippingAddress,
-    items: toOrderItems(input.items),
-    totalGBP: input.totalGBP,
-    currency: input.currency,
-    paymentMethod: input.paymentMethod,
-    status: "pending_payment" as OrderStatus,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  await withTimeout(
+    setDoc(doc(db, "orders", input.orderId), {
+      orderId: input.orderId,
+      userId: input.userId,
+      customerEmail: input.customerEmail,
+      customerName: input.customerName,
+      shippingAddress: input.shippingAddress,
+      items: toOrderItems(input.items),
+      totalGBP: input.totalGBP,
+      currency: input.currency,
+      paymentMethod: input.paymentMethod,
+      status: "pending_payment" as OrderStatus,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }),
+    8000,
+    "Order save"
+  );
 }
 
 function mapOrder(id: string, data: Record<string, unknown>): Order {

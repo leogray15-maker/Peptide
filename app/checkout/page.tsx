@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const [order, setOrder] = useState<CheckoutResult | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [paymentSettings, setPaymentSettings] = useState<Partial<PaymentSettings> | null>(null);
+  const [persistError, setPersistError] = useState<string | null>(null);
 
   // Load admin-set payment details up front (non-blocking). If this fails or is
   // slow, createOrder simply falls back to the env-var defaults.
@@ -58,7 +59,10 @@ export default function CheckoutPage() {
 
       // Persist the order in the background — the customer's payment
       // instructions must never depend on a Firestore round-trip. The items
-      // snapshot is captured synchronously here, before clearCart() runs.
+      // snapshot is captured synchronously here, before clearCart() runs. If the
+      // write is rejected (e.g. Firestore rules not published) we surface a
+      // visible warning on the confirmation screen rather than losing the order.
+      setPersistError(null);
       void saveOrder({
         orderId: result.orderId,
         userId: user?.uid ?? null,
@@ -69,7 +73,10 @@ export default function CheckoutPage() {
         totalGBP: total,
         currency: "GBP",
         paymentMethod,
-      }).catch((err) => console.error("Failed to persist order", err));
+      }).catch((err) => {
+        console.error("Failed to persist order", err);
+        setPersistError(orderPersistMessage(err));
+      });
 
       setOrder(result);
       clearCart();
@@ -242,6 +249,15 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
+              {persistError && (
+                <div
+                  className="p-4 rounded-lg text-sm"
+                  style={{ background: "rgba(231,76,60,0.08)", border: "1px solid rgba(231,76,60,0.3)", color: "var(--text)" }}
+                >
+                  {persistError}
+                </div>
+              )}
+
               {/* Bank transfer instructions */}
               {order.instructions.type === "bank_transfer" && (
                 <PaymentInstructions title="Bank Transfer Details" reference={order.orderId}>
@@ -339,6 +355,22 @@ export default function CheckoutPage() {
       </div>
     </div>
   );
+}
+
+// Turn a Firestore failure into a customer-safe message. The real error code is
+// also logged to the console (see withTimeout) for diagnosis — most commonly
+// "permission-denied" when the Firestore security rules haven't been published.
+function orderPersistMessage(err: unknown): string {
+  const code = (err as { code?: string })?.code ?? "";
+  const contact =
+    "Your payment details below are still valid — please go ahead, and contact us with your order reference so we can confirm it manually.";
+  if (code === "permission-denied") {
+    return `We couldn't save your order to our system (permission denied). ${contact}`;
+  }
+  if (code === "deadline-exceeded" || code === "unavailable") {
+    return `We couldn't reach our system to record your order (the request timed out). ${contact}`;
+  }
+  return `We couldn't confirm your order was saved${code ? ` (${code})` : ""}. ${contact}`;
 }
 
 function Field({
