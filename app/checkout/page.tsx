@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Copy, Check, Bitcoin, Building2, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -7,6 +7,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
 import { saveOrder } from "@/lib/db/orders";
+import { getPaymentSettings, type PaymentSettings } from "@/lib/db/settings";
 import { Button } from "@/components/ui/Button";
 
 type Step = "details" | "payment" | "confirm";
@@ -25,6 +26,19 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<CheckoutResult | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [paymentSettings, setPaymentSettings] = useState<Partial<PaymentSettings> | null>(null);
+
+  // Load admin-set payment details up front (non-blocking). If this fails or is
+  // slow, createOrder simply falls back to the env-var defaults.
+  useEffect(() => {
+    let active = true;
+    getPaymentSettings()
+      .then((s) => active && setPaymentSettings(s))
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function handlePlaceOrder() {
     setLoading(true);
@@ -38,7 +52,8 @@ export default function CheckoutPage() {
           customerName: name,
           shippingAddress: address,
         },
-        paymentMethod
+        paymentMethod,
+        paymentSettings
       );
 
       // Persist the order in the background — the customer's payment
