@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { initializeFirestore, getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -12,6 +13,24 @@ const firebaseConfig = {
 };
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+// App Check (client-only). If App Check is enforced on Firestore/Auth, every
+// request must carry a token or it is blocked. The reCAPTCHA v3 *site* key is
+// public and safe to ship; the matching secret lives in the Firebase console.
+if (typeof window !== "undefined") {
+  const siteKey = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+  if (siteKey) {
+    try {
+      initializeAppCheck(firebaseApp, {
+        provider: new ReCaptchaV3Provider(siteKey),
+        isTokenAutoRefreshEnabled: true,
+      });
+    } catch {
+      // already initialized (e.g. hot-reload) — ignore
+    }
+  }
+}
+
 export const auth = getAuth(firebaseApp);
 export const googleProvider = new GoogleAuthProvider();
 
