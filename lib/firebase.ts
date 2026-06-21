@@ -17,12 +17,12 @@ export const googleProvider = new GoogleAuthProvider();
 
 // Some networks, proxies and browser extensions block Firestore's streaming
 // WebChannel transport, which makes every read/write hang indefinitely (auth
-// still works because it uses plain HTTPS). Auto-detect that situation and fall
-// back to long-polling so Firestore works in restrictive environments.
+// still works because it uses plain HTTPS). Force long-polling, which uses
+// ordinary XHR requests and gets through these restrictive environments.
 let firestore: Firestore;
 try {
   firestore = initializeFirestore(firebaseApp, {
-    experimentalAutoDetectLongPolling: true,
+    experimentalForceLongPolling: true,
   });
 } catch {
   // Already initialized (e.g. during hot-reload) — reuse the existing instance.
