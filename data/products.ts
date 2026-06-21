@@ -2,7 +2,7 @@
 // To add a product: add an entry below following the Product type.
 // Prices are in GBP. TODO comments flag items needing price/size confirmation.
 
-export type ProductBadge = "Selling fast" | "New" | "Restocked" | "Staff Pick";
+export type ProductBadge = "Most Popular" | "Selling fast" | "New" | "Restocked" | "Staff Pick";
 
 export type Category =
   | "GLP-1 / Metabolic"
@@ -1245,6 +1245,26 @@ export const products: Product[] = [
 export const uniqueProducts: Product[] = products.filter(
   (p, i, arr) => arr.findIndex((x) => x.slug === p.slug) === i
 );
+
+// Curated best-sellers. Single source of truth for the homepage "Most Popular"
+// section AND the "Most Popular" badge shown on their cards.
+export const POPULAR_SLUGS = [
+  "ghk-cu",
+  "bpc-157",
+  "tb-500",
+  "glow-blend",
+  "melanotan-2",
+  "retatrutide",
+  "kpv",
+];
+
+// Tag the curated best-sellers with a "Most Popular" badge (prepended so it
+// shows first), without duplicating it if already present.
+for (const p of uniqueProducts) {
+  if (POPULAR_SLUGS.includes(p.slug)) {
+    p.badges = ["Most Popular", ...(p.badges ?? []).filter((b) => b !== "Most Popular")];
+  }
+}
 
 export function getProductBySlug(slug: string): Product | undefined {
   return uniqueProducts.find((p) => p.slug === slug);

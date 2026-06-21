@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FlaskConical, Shield, Zap, Package, Microscope, Calculator } from "lucide-react";
-import { uniqueProducts, getProductBySlug, type Product } from "@/data/products";
+import { uniqueProducts, getProductBySlug, POPULAR_SLUGS, type Product } from "@/data/products";
 import { Section, SectionHead } from "@/components/ui/Section";
 import { StatBlock } from "@/components/ui/StatBlock";
 import { Tabs } from "@/components/ui/Tabs";
@@ -37,17 +37,6 @@ const STATS = [
   { value: "100%",  label: "In-House Tested" },
   { value: "24hr",  label: "Dispatch Time" },
   { value: "EU+",   label: "Countries Shipped" },
-];
-
-// Curated best-sellers, shown in this order on the homepage.
-const POPULAR_SLUGS = [
-  "ghk-cu",
-  "bpc-157",
-  "tb-500",
-  "glow-blend",
-  "melanotan-2",
-  "retatrutide",
-  "kpv",
 ];
 
 export default function HomePage() {

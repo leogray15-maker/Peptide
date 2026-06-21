@@ -247,7 +247,7 @@ function ShopContent() {
             <div>
               <p className="label-upper mb-3">Tags</p>
               <div className="flex flex-wrap gap-2">
-                {(["Selling fast", "New", "Restocked", "Staff Pick"] as ProductBadge[]).map((b) => (
+                {(["Most Popular", "Selling fast", "New", "Restocked", "Staff Pick"] as ProductBadge[]).map((b) => (
                   <button
                     key={b}
                     onClick={() => { setFilterBadge(filterBadge === b ? "" : b); setPage(1); }}
