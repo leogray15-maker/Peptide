@@ -4,7 +4,7 @@
 
 import type { CartItem } from "@/contexts/CartContext";
 import type { CurrencyCode } from "@/lib/config";
-import { getPaymentSettings } from "@/lib/db/settings";
+import type { PaymentSettings } from "@/lib/db/settings";
 
 export type PaymentMethod = "bank_transfer" | "crypto_btc" | "crypto_eth" | "crypto_usdt";
 
@@ -52,12 +52,14 @@ function generateOrderId(): string {
 
 export async function createOrder(
   details: OrderDetails,
-  method: PaymentMethod
+  method: PaymentMethod,
+  // Admin-set details (loaded by the page, not here — keeps Firestore off the
+  // order-placement critical path so "Place Order" can never hang). Falls back
+  // to env-var defaults when a field is unset.
+  settings?: Partial<PaymentSettings> | null
 ): Promise<CheckoutResult> {
   const orderId = generateOrderId();
 
-  // Admin-set details (from the CRM) take precedence over env-var defaults.
-  const settings = await getPaymentSettings().catch(() => null);
   const pick = (value: string | undefined, fallback: string | undefined, placeholder: string) =>
     (value && value.trim()) || fallback || placeholder;
 

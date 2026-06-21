@@ -49,8 +49,16 @@ export default function PaymentSettingsForm() {
       await savePaymentSettings(values);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
-    } catch {
-      setError("Save failed — confirm you're signed in as an admin and the rules are published.");
+    } catch (err) {
+      console.error(err);
+      const code = (err as { code?: string })?.code ?? "";
+      if (code === "permission-denied") {
+        setError("Save denied by Firestore rules. Publish the updated rules (they must include the /settings block) and make sure you're signed in as an admin email.");
+      } else if (code === "deadline-exceeded" || code === "unavailable") {
+        setError("Couldn't reach Firestore (request timed out). Check your connection and that the database exists, then try again.");
+      } else {
+        setError(`Save failed${code ? ` (${code})` : ""}. Confirm you're signed in as an admin and the rules are published.`);
+      }
     } finally {
       setSaving(false);
     }

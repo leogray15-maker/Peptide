@@ -46,15 +46,31 @@ export const PAYMENT_FIELDS: {
 
 const settingsRef = () => doc(db, "settings", "payment");
 
+// Never let a Firestore call hang the UI indefinitely. If the network or rules
+// leave a request pending, reject after `ms` so callers can fall back / show
+// an error instead of an endless spinner.
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => {
+        const err = new Error(`${label} timed out`) as Error & { code?: string };
+        err.code = "deadline-exceeded";
+        reject(err);
+      }, ms)
+    ),
+  ]);
+}
+
 export async function getPaymentSettings(): Promise<Partial<PaymentSettings> | null> {
-  const snap = await getDoc(settingsRef());
+  const snap = await withTimeout(getDoc(settingsRef()), 8000, "Payment settings read");
   return snap.exists() ? (snap.data() as Partial<PaymentSettings>) : null;
 }
 
 export async function savePaymentSettings(data: PaymentSettings): Promise<void> {
-  await setDoc(
-    settingsRef(),
-    { ...data, updatedAt: serverTimestamp() },
-    { merge: true }
+  await withTimeout(
+    setDoc(settingsRef(), { ...data, updatedAt: serverTimestamp() }, { merge: true }),
+    8000,
+    "Payment settings save"
   );
 }
