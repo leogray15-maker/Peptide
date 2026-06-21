@@ -33,6 +33,7 @@ export function Badge({ variant = "muted", children, className = "" }: BadgeProp
 
 // Convenience badge map for product flags
 export const PRODUCT_BADGE_MAP = {
+  "Most Popular": "accent",
   "Selling fast": "amber",
   "New":          "accent",
   "Restocked":    "green",
