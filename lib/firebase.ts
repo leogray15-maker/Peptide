@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, getFirestore, type Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,4 +14,18 @@ const firebaseConfig = {
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
 export const googleProvider = new GoogleAuthProvider();
-export const db = getFirestore(firebaseApp);
+
+// Some networks, proxies and browser extensions block Firestore's streaming
+// WebChannel transport, which makes every read/write hang indefinitely (auth
+// still works because it uses plain HTTPS). Auto-detect that situation and fall
+// back to long-polling so Firestore works in restrictive environments.
+let firestore: Firestore;
+try {
+  firestore = initializeFirestore(firebaseApp, {
+    experimentalAutoDetectLongPolling: true,
+  });
+} catch {
+  // Already initialized (e.g. during hot-reload) — reuse the existing instance.
+  firestore = getFirestore(firebaseApp);
+}
+export const db = firestore;
