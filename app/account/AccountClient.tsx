@@ -21,10 +21,21 @@ function friendlyAuthError(code: string): string {
       return "Password must be at least 6 characters.";
     case "auth/popup-closed-by-user":
       return "Google sign-in was closed before completing.";
+    case "auth/popup-blocked":
+      return "Your browser blocked the sign-in popup — allow pop-ups for this site and try again.";
     case "auth/too-many-requests":
       return "Too many attempts — please wait a moment and try again.";
+    case "auth/network-request-failed":
+      return "Network error — check your connection and try again.";
+    case "auth/unauthorized-domain":
+      return "This site's domain isn't authorised for sign-in yet. (Owner: add it in Firebase → Authentication → Settings → Authorized domains.)";
+    case "auth/operation-not-allowed":
+      return "This sign-in method isn't enabled. (Owner: enable Email/Password and Google in Firebase → Authentication → Sign-in method.)";
+    case "auth/configuration-not-found":
+    case "auth/invalid-api-key":
+      return "Sign-in isn't configured for this site yet. (Owner: check the Firebase environment variables.)";
     default:
-      return "Something went wrong. Please try again.";
+      return `Something went wrong. Please try again.${code ? ` (${code})` : ""}`;
   }
 }
 
