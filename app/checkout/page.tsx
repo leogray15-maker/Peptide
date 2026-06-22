@@ -6,7 +6,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
-import { saveOrder } from "@/lib/db/orders";
+import { saveOrder, hasUsedPromoCode } from "@/lib/db/orders";
 import { getPaymentSettings, type PaymentSettings } from "@/lib/db/settings";
 import { getPromoPercent } from "@/lib/config";
 import { Button } from "@/components/ui/Button";
@@ -32,20 +32,35 @@ export default function CheckoutPage() {
   const [promoInput, setPromoInput] = useState("");
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
+  const [checkingPromo, setCheckingPromo] = useState(false);
 
   const discountPct = appliedCode ? getPromoPercent(appliedCode) : 0;
   const discountAmount = +(total * (discountPct / 100)).toFixed(2);
   const payableTotal = +(total - discountAmount).toFixed(2);
 
-  function applyPromo() {
+  async function applyPromo() {
     const code = promoInput.trim().toUpperCase();
     if (!code) return;
-    if (getPromoPercent(code) > 0) {
-      setAppliedCode(code);
-      setPromoError(null);
-    } else {
+    if (getPromoPercent(code) <= 0) {
       setAppliedCode(null);
       setPromoError("That code isn't valid.");
+      return;
+    }
+    // One use per customer — block if this user has already redeemed it.
+    setCheckingPromo(true);
+    setPromoError(null);
+    try {
+      if (user && (await hasUsedPromoCode(user.uid, code))) {
+        setAppliedCode(null);
+        setPromoError("You've already used this code on a previous order.");
+        return;
+      }
+      setAppliedCode(code);
+    } catch {
+      // If the check itself fails (e.g. offline), don't block the customer.
+      setAppliedCode(code);
+    } finally {
+      setCheckingPromo(false);
     }
   }
 
@@ -99,6 +114,7 @@ export default function CheckoutPage() {
         totalGBP: payableTotal,
         currency: "GBP",
         paymentMethod,
+        promoCode: appliedCode,
       }).catch((err) => {
         console.error("Failed to persist order", err);
         setPersistError(orderPersistMessage(err));
@@ -399,10 +415,11 @@ export default function CheckoutPage() {
                       />
                       <button
                         onClick={applyPromo}
-                        className="px-4 py-2 rounded text-sm font-semibold border transition-colors hover:bg-[var(--surface-2)]"
+                        disabled={checkingPromo}
+                        className="px-4 py-2 rounded text-sm font-semibold border transition-colors hover:bg-[var(--surface-2)] disabled:opacity-50"
                         style={{ borderColor: "var(--line-med)", color: "var(--text)" }}
                       >
-                        Apply
+                        {checkingPromo ? "…" : "Apply"}
                       </button>
                     </div>
                     {promoError && (

@@ -73,6 +73,7 @@ export interface Order {
   status: OrderStatus;
   trackingNumber?: string;
   adminNotes?: string;
+  promoCode: string | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 }
@@ -107,6 +108,7 @@ export interface SaveOrderInput {
   totalGBP: number;
   currency: CurrencyCode;
   paymentMethod: PaymentMethod;
+  promoCode?: string | null;
 }
 
 // Persist a newly placed order. Best-effort: callers should not block the
@@ -127,12 +129,21 @@ export async function saveOrder(input: SaveOrderInput): Promise<void> {
       currency: input.currency,
       paymentMethod: input.paymentMethod,
       status: "pending_payment" as OrderStatus,
+      promoCode: input.promoCode ?? null,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     }),
     8000,
     "Order save"
   );
+}
+
+// Has this user already placed an order using the given promo code?
+// Used to enforce one-use-per-customer at checkout.
+export async function hasUsedPromoCode(userId: string, code: string): Promise<boolean> {
+  const target = code.trim().toUpperCase();
+  const orders = await getUserOrders(userId);
+  return orders.some((o) => (o.promoCode ?? "").toUpperCase() === target);
 }
 
 function mapOrder(id: string, data: Record<string, unknown>): Order {
@@ -149,6 +160,7 @@ function mapOrder(id: string, data: Record<string, unknown>): Order {
     status: (data.status as OrderStatus) ?? "pending_payment",
     trackingNumber: (data.trackingNumber as string) ?? undefined,
     adminNotes: (data.adminNotes as string) ?? undefined,
+    promoCode: (data.promoCode as string | null) ?? null,
     createdAt: tsToDate(data.createdAt),
     updatedAt: tsToDate(data.updatedAt),
   };
