@@ -70,7 +70,6 @@ export default function ReviewsStrip() {
           </p>
           <div className="mt-auto pt-3 border-t" style={{ borderColor: "var(--line)" }}>
             <p className="text-xs font-semibold">{r.name}</p>
-            <p className="text-xs" style={{ color: "var(--muted)" }}>{r.role}</p>
           </div>
         </div>
       ))}

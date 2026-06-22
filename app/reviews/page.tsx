@@ -76,7 +76,6 @@ export default function ReviewsPage() {
             </p>
             <div className="pt-3 border-t" style={{ borderColor: "var(--line)" }}>
               <p className="text-xs font-semibold">{r.name}</p>
-              <p className="text-xs" style={{ color: "var(--muted)" }}>{r.role}</p>
               <p className="text-xs mt-0.5" style={{ color: "var(--subtle)" }}>
                 {new Date(r.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
               </p>
