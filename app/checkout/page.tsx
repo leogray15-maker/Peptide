@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
 import { saveOrder } from "@/lib/db/orders";
 import { getPaymentSettings, type PaymentSettings } from "@/lib/db/settings";
+import { getPromoPercent } from "@/lib/config";
 import { Button } from "@/components/ui/Button";
 
 type Step = "details" | "payment" | "confirm";
@@ -28,6 +29,31 @@ export default function CheckoutPage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [paymentSettings, setPaymentSettings] = useState<Partial<PaymentSettings> | null>(null);
   const [persistError, setPersistError] = useState<string | null>(null);
+  const [promoInput, setPromoInput] = useState("");
+  const [appliedCode, setAppliedCode] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
+  const discountPct = appliedCode ? getPromoPercent(appliedCode) : 0;
+  const discountAmount = +(total * (discountPct / 100)).toFixed(2);
+  const payableTotal = +(total - discountAmount).toFixed(2);
+
+  function applyPromo() {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    if (getPromoPercent(code) > 0) {
+      setAppliedCode(code);
+      setPromoError(null);
+    } else {
+      setAppliedCode(null);
+      setPromoError("That code isn't valid.");
+    }
+  }
+
+  function removePromo() {
+    setAppliedCode(null);
+    setPromoInput("");
+    setPromoError(null);
+  }
 
   // Load admin-set payment details up front (non-blocking). If this fails or is
   // slow, createOrder simply falls back to the env-var defaults.
@@ -47,7 +73,7 @@ export default function CheckoutPage() {
       const result = await createOrder(
         {
           items,
-          totalGBP: total,
+          totalGBP: payableTotal,
           currency: "GBP",
           customerEmail: email,
           customerName: name,
@@ -70,7 +96,7 @@ export default function CheckoutPage() {
         customerName: name,
         shippingAddress: address,
         items,
-        totalGBP: total,
+        totalGBP: payableTotal,
         currency: "GBP",
         paymentMethod,
       }).catch((err) => {
@@ -342,12 +368,69 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Promo / discount code */}
+              <div className="mb-4 pb-4 border-b" style={{ borderColor: "var(--line)" }}>
+                <label className="label-upper block mb-2">Discount Code</label>
+                {appliedCode ? (
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm" style={{ color: "var(--green)" }}>
+                      {appliedCode} applied — {discountPct}% off
+                    </span>
+                    <button
+                      onClick={removePromo}
+                      className="text-xs underline"
+                      style={{ color: "var(--muted)" }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={promoInput}
+                        onChange={(e) => { setPromoInput(e.target.value); setPromoError(null); }}
+                        onKeyDown={(e) => e.key === "Enter" && applyPromo()}
+                        placeholder="e.g. ARCANE10"
+                        className="flex-1 min-w-0 rounded px-3 py-2 text-sm border uppercase"
+                        style={{ background: "var(--surface-2)", borderColor: "var(--line-med)", color: "var(--text)" }}
+                      />
+                      <button
+                        onClick={applyPromo}
+                        className="px-4 py-2 rounded text-sm font-semibold border transition-colors hover:bg-[var(--surface-2)]"
+                        style={{ borderColor: "var(--line-med)", color: "var(--text)" }}
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {promoError && (
+                      <p className="text-xs mt-1.5" style={{ color: "#E74C3C" }}>{promoError}</p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {discountAmount > 0 && (
+                <>
+                  <div className="flex justify-between text-sm mb-1" style={{ color: "var(--muted)" }}>
+                    <span>Subtotal</span>
+                    <span>{format(total)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm mb-3" style={{ color: "var(--green)" }}>
+                    <span>Discount ({discountPct}%)</span>
+                    <span>−{format(discountAmount)}</span>
+                  </div>
+                </>
+              )}
+
               <div
                 className="pt-3 border-t flex justify-between font-bold"
                 style={{ borderColor: "var(--line)" }}
               >
                 <span>Total</span>
-                <span style={{ fontFamily: "var(--font-syne), sans-serif" }}>{format(total)}</span>
+                <span style={{ fontFamily: "var(--font-syne), sans-serif" }}>{format(payableTotal)}</span>
               </div>
             </div>
           </div>
