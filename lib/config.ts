@@ -48,6 +48,17 @@ export function getBulkDiscount(qty: number): number {
   return tier?.discountPct ?? 0;
 }
 
+// Promo / discount codes (order-level percentage off). Codes are matched
+// case-insensitively.
+export const PROMO_CODES: Record<string, { percentOff: number }> = {
+  ARCANE10: { percentOff: 10 },
+};
+
+// Returns the percentage discount for a code, or 0 if it isn't valid.
+export function getPromoPercent(code: string): number {
+  return PROMO_CODES[code.trim().toUpperCase()]?.percentOff ?? 0;
+}
+
 // Currency — GBP default; static FX rates (update periodically)
 export const CURRENCIES = {
   GBP: { symbol: "£", label: "GBP", rate: 1 },
