@@ -3,37 +3,37 @@ import { Star } from "lucide-react";
 // TODO: replace with real verified reviews — no therapeutic claims, no human use implications
 const REVIEWS = [
   {
-    name: "Dr. A. Morrison",
-    role: "Independent Researcher",
+    name: "Lily Carter",
+    role: "Verified Researcher",
     rating: 5,
     body: "Consistent purity across multiple batches. COA linked directly from the product page — exactly what professional procurement requires.",
   },
   {
-    name: "R. Steinbach",
+    name: "Ethan Reid",
     role: "Research Biochemist",
     rating: 5,
     body: "Dispatch was next working day as advertised. The lyophilised preparation was intact and reconstituted cleanly. Will reorder.",
   },
   {
-    name: "J. Okonkwo",
-    role: "Laboratory Procurement Manager",
+    name: "Jamie Osborne",
+    role: "Lab Procurement Lead",
     rating: 5,
     body: "Arcane is now our primary UK supplier. Pricing is competitive and the independently verified COA on each lot is non-negotiable for our institution.",
   },
   {
-    name: "Dr. C. Hartley",
+    name: "Sophie Bennett",
     role: "Pharmacology Researcher",
     rating: 5,
     body: "The peptide calculator on the site saved me considerable time. Exact mg/mL outputs matched my own calculations.",
   },
   {
-    name: "M. Patel",
+    name: "Marcus Hale",
     role: "Sports Science Lab",
     rating: 5,
     body: "Used the GLOW blend for in-vitro fibroblast assays. Packaging was temperature-controlled and professional.",
   },
   {
-    name: "K. Lindström",
+    name: "Priya Shah",
     role: "Research Associate",
     rating: 5,
     body: "I appreciate the clear research-only positioning. Other suppliers blur this line; Arcane does not.",

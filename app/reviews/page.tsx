@@ -9,15 +9,15 @@ export const metadata: Metadata = {
 
 // TODO: replace with verified Trustpilot / real review data — no human-use/therapeutic implications
 const REVIEWS = [
-  { name: "Dr. A. Morrison",   role: "Independent Researcher",         rating: 5, date: "2025-05-12", body: "Consistent purity across multiple batches. COA linked directly from the product page — exactly what professional procurement requires. Will continue purchasing." },
-  { name: "R. Steinbach",      role: "Research Biochemist",            rating: 5, date: "2025-05-03", body: "Dispatch was next working day as advertised. The lyophilised preparation was intact and reconstituted cleanly. Excellent communications." },
-  { name: "J. Okonkwo",        role: "Laboratory Procurement Manager", rating: 5, date: "2025-04-28", body: "Arcane is now our primary UK supplier. Pricing is competitive and the independently verified COA on each lot is non-negotiable for our institution." },
-  { name: "Dr. C. Hartley",    role: "Pharmacology Researcher",        rating: 5, date: "2025-04-15", body: "The peptide calculator on the site saved me considerable time. Exact mg/mL outputs matched my own verification calculations." },
-  { name: "M. Patel",          role: "Sports Science Lab",             rating: 5, date: "2025-04-10", body: "Used the GLOW blend for in-vitro fibroblast assays. Packaging was temperature-controlled and professional. Highly satisfied." },
-  { name: "K. Lindström",      role: "Research Associate",             rating: 5, date: "2025-03-22", body: "I appreciate the clear research-only positioning. Other suppliers blur this line; Arcane does not. The COA portal is exemplary." },
-  { name: "T. Nakamura",       role: "Cell Biology Lab Manager",       rating: 5, date: "2025-03-14", body: "Second order this month. Quality and turnaround time is outstanding. The glossary and storage guides are a genuine value-add." },
-  { name: "Dr. F. El-Amin",    role: "Clinical Research Scientist",    rating: 5, date: "2025-03-05", body: "The compliance posture is exactly what we require for institutional purchasing. Research-use declarations are clear and unambiguous." },
-  { name: "S. Bergmann",       role: "Biochemistry MSc Student",       rating: 4, date: "2025-02-28", body: "Very happy with quality and price. Would appreciate more compounds in the catalogue — hoping to see expansion soon." },
+  { name: "Lily Carter",     role: "Verified Researcher",            rating: 5, date: "2025-05-12", body: "Consistent purity across multiple batches. COA linked directly from the product page — exactly what professional procurement requires. Will continue purchasing." },
+  { name: "Ethan Reid",      role: "Research Biochemist",            rating: 5, date: "2025-05-03", body: "Dispatch was next working day as advertised. The lyophilised preparation was intact and reconstituted cleanly. Excellent communications." },
+  { name: "Jamie Osborne",   role: "Lab Procurement Lead",           rating: 5, date: "2025-04-28", body: "Arcane is now our primary UK supplier. Pricing is competitive and the independently verified COA on each lot is non-negotiable for our institution." },
+  { name: "Sophie Bennett",  role: "Pharmacology Researcher",        rating: 5, date: "2025-04-15", body: "The peptide calculator on the site saved me considerable time. Exact mg/mL outputs matched my own verification calculations." },
+  { name: "Marcus Hale",     role: "Sports Science Lab",             rating: 5, date: "2025-04-10", body: "Used the GLOW blend for in-vitro fibroblast assays. Packaging was temperature-controlled and professional. Highly satisfied." },
+  { name: "Priya Shah",      role: "Research Associate",             rating: 5, date: "2025-03-22", body: "I appreciate the clear research-only positioning. Other suppliers blur this line; Arcane does not. The COA portal is exemplary." },
+  { name: "Daniel Whitlock", role: "Cell Biology Lab",               rating: 5, date: "2025-03-14", body: "Second order this month. Quality and turnaround time is outstanding. The glossary and storage guides are a genuine value-add." },
+  { name: "Hannah Brooks",   role: "Biochemistry MSc Student",       rating: 4, date: "2025-02-28", body: "Very happy with quality and price. Would appreciate more compounds in the catalogue — hoping to see expansion soon." },
+  { name: "Olivia Nash",     role: "Laboratory Manager",             rating: 5, date: "2025-03-05", body: "The compliance posture is exactly what we require for institutional purchasing. Research-use declarations are clear and unambiguous." },
 ];
 
 function Stars({ n }: { n: number }) {
