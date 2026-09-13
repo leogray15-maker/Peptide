@@ -1,5 +1,7 @@
-import { ArrowRight, BookOpen, Download, FileText } from "lucide-react";
-import { GUIDE } from "@/data/guide";
+"use client";
+import { useState } from "react";
+import { ArrowRight, BookOpen, ChevronDown, Download, FileText } from "lucide-react";
+import { GUIDE, GUIDE_LESSON_COUNT } from "@/data/guide";
 import { formatPrice } from "@/lib/config";
 
 // The guide is paid for on Stripe, not through the site checkout, so every CTA
@@ -14,14 +16,79 @@ function CtaLabel() {
   );
 }
 
+// Modules expand to show the lessons inside them. A module whose lesson list
+// hasn't been supplied yet is shown as a plain, non-expandable row.
+function ModuleList() {
+  // Collapsed by default — the homepage band stays compact until a shopper
+  // asks for detail.
+  const [open, setOpen] = useState<string | null>(null);
+
+  return (
+    <div className="flex flex-col divide-y" style={{ borderColor: "var(--line)" }}>
+      {GUIDE.modules.map((module) => {
+        const expandable = module.lessons.length > 0;
+        const isOpen = expandable && open === module.title;
+
+        return (
+          <div key={module.title}>
+            {expandable ? (
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : module.title)}
+                aria-expanded={isOpen}
+                className="flex w-full items-center gap-2.5 py-2.5 text-left"
+              >
+                <FileText size={13} className="shrink-0" style={{ color: "var(--accent)" }} />
+                <span className="flex-1 text-sm leading-snug" style={{ color: "var(--text)" }}>
+                  {module.title}
+                </span>
+                <span className="text-[11px] shrink-0" style={{ color: "var(--subtle)" }}>
+                  {module.lessons.length} lessons
+                </span>
+                <ChevronDown
+                  size={14}
+                  className="shrink-0 transition-transform duration-200"
+                  style={{ color: "var(--muted)", transform: isOpen ? "rotate(180deg)" : "rotate(0)" }}
+                />
+              </button>
+            ) : (
+              <div className="flex items-center gap-2.5 py-2.5">
+                <FileText size={13} className="shrink-0" style={{ color: "var(--subtle)" }} />
+                <span className="flex-1 text-sm leading-snug" style={{ color: "var(--text)" }}>
+                  {module.title}
+                </span>
+              </div>
+            )}
+
+            {isOpen && (
+              <ul className="pb-3 pl-6 flex flex-col gap-1.5">
+                {module.lessons.map((lesson) => (
+                  <li
+                    key={lesson}
+                    className="text-xs leading-snug flex gap-2"
+                    style={{ color: "var(--muted)" }}
+                  >
+                    <span style={{ color: "var(--subtle)" }}>·</span>
+                    {lesson}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 // Full-width band for the homepage.
 export function GuideFeature() {
   return (
     <div
-      className="rounded-xl p-8 sm:p-12 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center"
+      className="rounded-xl p-8 sm:p-12 grid lg:grid-cols-2 gap-10 lg:gap-12 items-start"
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
     >
-      <div>
+      <div className="lg:sticky lg:top-24">
         <p className="label-upper mb-3" style={{ color: "var(--accent)" }}>
           Digital Guide
         </p>
@@ -49,29 +116,21 @@ export function GuideFeature() {
             <CtaLabel />
           </a>
           <span className="inline-flex items-center gap-2 text-xs" style={{ color: "var(--subtle)" }}>
-            <Download size={13} /> {GUIDE.modules.length} modules · instant download
+            <Download size={13} /> {GUIDE.modules.length} modules ·{" "}
+            {GUIDE_LESSON_COUNT}+ lessons
           </span>
         </div>
       </div>
 
       <div
-        className="rounded-lg p-6"
+        className="rounded-lg p-5 sm:p-6"
         style={{ background: "var(--surface-2)", border: "1px solid var(--line)" }}
       >
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mb-2">
           <BookOpen size={15} style={{ color: "var(--accent)" }} />
           <p className="label-upper">What&apos;s Inside</p>
         </div>
-        <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2.5">
-          {GUIDE.modules.map((m) => (
-            <div key={m.title} className="flex items-start gap-2">
-              <FileText size={13} className="shrink-0 mt-1" style={{ color: "var(--subtle)" }} />
-              <p className="text-sm leading-snug" style={{ color: "var(--text)" }}>
-                {m.title}
-              </p>
-            </div>
-          ))}
-        </div>
+        <ModuleList />
       </div>
     </div>
   );
@@ -100,7 +159,7 @@ export function GuideUpsell({
       </p>
       <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--muted)" }}>
         {GUIDE.modules.length}{" "}
-        written modules, from the beginners&apos; guide through GLP,
+        modules and {GUIDE_LESSON_COUNT}+ lessons, from the beginners&apos; guide through GLP,
         stacking, bioregulators, nootropics and bloodwork. Instant digital download, bought
         separately from your order.
       </p>
