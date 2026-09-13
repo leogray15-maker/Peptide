@@ -4,12 +4,14 @@ import "./globals.css";
 import { CartProvider } from "@/contexts/CartContext";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { DealsProvider } from "@/contexts/DealsContext";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ComplianceGate from "@/components/compliance/ComplianceGate";
 import CookieBanner from "@/components/compliance/CookieBanner";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import SocialProofPopup from "@/components/social/SocialProofPopup";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -66,13 +68,16 @@ export default function RootLayout({
         <AuthProvider>
           <CurrencyProvider>
             <CartProvider>
-              <ComplianceGate />
-              <CookieBanner />
-              <AnnouncementBar />
-              <Header />
-              <main className="flex-1">{children}</main>
-              <Footer />
-              <WhatsAppButton />
+              <DealsProvider>
+                <ComplianceGate />
+                <CookieBanner />
+                <AnnouncementBar />
+                <Header />
+                <main className="flex-1">{children}</main>
+                <Footer />
+                <WhatsAppButton />
+                <SocialProofPopup />
+              </DealsProvider>
             </CartProvider>
           </CurrencyProvider>
         </AuthProvider>

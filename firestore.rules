@@ -44,9 +44,12 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
-    // ── Site settings (bank / crypto details shown at checkout) ──
+    // ── Site settings ──
+    // `promotions` (live deals + activity-popup settings) is public marketing
+    // data — signed-out visitors must be able to see the running deal. Every
+    // other settings doc (bank / crypto details) stays behind sign-in.
     match /settings/{docId} {
-      allow read:  if isSignedIn();
+      allow read:  if docId == 'promotions' || isSignedIn();
       allow write: if isAdmin();
     }
 

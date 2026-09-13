@@ -74,8 +74,19 @@ export interface Order {
   trackingNumber?: string;
   adminNotes?: string;
   promoCode: string | null;
+  /** Admin-run deals that applied to this order (see lib/deals.ts). */
+  appliedDeals: AppliedOrderDeal[];
+  /** Free items owed with this order, e.g. "Bacteriostatic Water 10 ml". */
+  gifts: string[];
   createdAt: Date | null;
   updatedAt: Date | null;
+}
+
+// A deal as it applied at the moment of purchase — stored flat so a later
+// change to the live deals never rewrites order history.
+export interface AppliedOrderDeal {
+  label: string;
+  amountGBP: number;
 }
 
 const ordersCol = () => collection(db, "orders");
@@ -109,6 +120,8 @@ export interface SaveOrderInput {
   currency: CurrencyCode;
   paymentMethod: PaymentMethod;
   promoCode?: string | null;
+  appliedDeals?: AppliedOrderDeal[];
+  gifts?: string[];
 }
 
 // Persist a newly placed order. Best-effort: callers should not block the
@@ -130,6 +143,11 @@ export async function saveOrder(input: SaveOrderInput): Promise<void> {
       paymentMethod: input.paymentMethod,
       status: "pending_payment" as OrderStatus,
       promoCode: input.promoCode ?? null,
+      appliedDeals: (input.appliedDeals ?? []).map((d) => ({
+        label: d.label,
+        amountGBP: d.amountGBP,
+      })),
+      gifts: input.gifts ?? [],
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     }),
@@ -161,6 +179,10 @@ function mapOrder(id: string, data: Record<string, unknown>): Order {
     trackingNumber: (data.trackingNumber as string) ?? undefined,
     adminNotes: (data.adminNotes as string) ?? undefined,
     promoCode: (data.promoCode as string | null) ?? null,
+    appliedDeals: Array.isArray(data.appliedDeals)
+      ? (data.appliedDeals as AppliedOrderDeal[])
+      : [],
+    gifts: Array.isArray(data.gifts) ? (data.gifts as string[]) : [],
     createdAt: tsToDate(data.createdAt),
     updatedAt: tsToDate(data.updatedAt),
   };

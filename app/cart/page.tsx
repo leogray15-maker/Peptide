@@ -5,6 +5,8 @@ import { Trash2, ShoppingBag } from "lucide-react";
 import { useCart, lineTotal } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDeals } from "@/contexts/DealsContext";
+import DealStrip from "@/components/deals/DealStrip";
 import { PriceGate } from "@/components/ui/PriceGate";
 import { getBulkDiscount } from "@/lib/config";
 import { FREE_SHIPPING_THRESHOLD_GBP } from "@/lib/config";
@@ -13,9 +15,15 @@ export default function CartPage() {
   const { items, removeItem, setQty, total, count } = useCart();
   const { format } = useCurrency();
   const { user } = useAuth();
+  const { evaluate } = useDeals();
 
-  const freeShipping = total >= FREE_SHIPPING_THRESHOLD_GBP;
-  const shippingRemaining = FREE_SHIPPING_THRESHOLD_GBP - total;
+  // Live deals the admin has switched on. Code-gated deals aren't applied here
+  // — the code is entered at checkout.
+  const deals = evaluate(items);
+  const payableTotal = Math.max(0, +(total - deals.discountGBP).toFixed(2));
+
+  const freeShipping = deals.freeShipping || payableTotal >= FREE_SHIPPING_THRESHOLD_GBP;
+  const shippingRemaining = FREE_SHIPPING_THRESHOLD_GBP - payableTotal;
 
   if (items.length === 0) {
     return (
@@ -50,6 +58,8 @@ export default function CartPage() {
         Cart ({count} item{count !== 1 ? "s" : ""})
       </h1>
 
+      <DealStrip className="mb-6" />
+
       {/* Free shipping progress */}
       {!freeShipping && (
         <div
@@ -66,7 +76,7 @@ export default function CartPage() {
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
-                width: `${Math.min(100, (total / FREE_SHIPPING_THRESHOLD_GBP) * 100)}%`,
+                width: `${Math.min(100, (payableTotal / FREE_SHIPPING_THRESHOLD_GBP) * 100)}%`,
                 background: "var(--accent)",
               }}
             />
@@ -189,6 +199,32 @@ export default function CartPage() {
                 <span style={{ color: "var(--muted)" }}>Subtotal</span>
                 <PriceGate size="sm"><span>{format(total)}</span></PriceGate>
               </div>
+              {deals.applied.map((deal) => (
+                <div
+                  key={deal.dealId}
+                  className="flex justify-between text-sm gap-3"
+                  style={{ color: "var(--green)" }}
+                >
+                  <span className="min-w-0">{deal.label}</span>
+                  <PriceGate size="sm">
+                    <span className="shrink-0">
+                      {deal.amountGBP > 0
+                        ? `−${format(deal.amountGBP)}`
+                        : deal.giftName
+                          ? "FREE"
+                          : "FREE SHIPPING"}
+                    </span>
+                  </PriceGate>
+                </div>
+              ))}
+
+              {deals.gifts.map((gift) => (
+                <div key={gift} className="flex justify-between text-sm gap-3">
+                  <span style={{ color: "var(--muted)" }}>{gift} (gift)</span>
+                  <span style={{ color: "var(--green)" }}>FREE</span>
+                </div>
+              ))}
+
               <div className="flex justify-between text-sm">
                 <span style={{ color: "var(--muted)" }}>Shipping (UK)</span>
                 <span style={{ color: freeShipping ? "var(--green)" : "var(--text)" }}>
@@ -204,7 +240,7 @@ export default function CartPage() {
                   <span
                     style={{ fontFamily: "var(--font-syne), sans-serif", fontSize: "1.125rem" }}
                   >
-                    {format(total)}
+                    {format(payableTotal)}
                   </span>
                 </PriceGate>
               </div>
