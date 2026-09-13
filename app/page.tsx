@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, FlaskConical, Shield, Zap, Package, Microscope, Calculator } from "lucide-react";
-import { uniqueProducts, getProductBySlug, POPULAR_SLUGS, type Product } from "@/data/products";
+import { uniqueProducts } from "@/data/products";
 import { Section, SectionHead } from "@/components/ui/Section";
 import { StatBlock } from "@/components/ui/StatBlock";
 import { Tabs } from "@/components/ui/Tabs";
@@ -44,9 +44,6 @@ export default function HomePage() {
   const staffPicks = uniqueProducts.filter((p) => p.badges?.includes("Staff Pick")).slice(0, 6);
   const restocked  = uniqueProducts.filter((p) => p.badges?.includes("Restocked")).slice(0, 6);
   const newItems   = uniqueProducts.slice(0, 6);
-  const popular    = POPULAR_SLUGS
-    .map((slug) => getProductBySlug(slug))
-    .filter((p): p is Product => Boolean(p));
 
   return (
     <>
@@ -141,17 +138,10 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Most Popular ─────────────────────────────────────────────────── */}
-      {popular.length > 0 && (
-        <Section>
-          <SectionHead
-            eyebrow="Selling Fast"
-            title="Most Popular"
-            subtitle="Our researchers' most-ordered compounds this season."
-          />
-          <HomeCatalogue products={popular} />
-        </Section>
-      )}
+      {/* ── Peptides 101 guide ───────────────────────────────────────────── */}
+      <Section>
+        <GuideFeature />
+      </Section>
 
       {/* ── 3. Shop by Research Need ─────────────────────────────────────── */}
       <Section>
@@ -210,11 +200,6 @@ export default function HomePage() {
             View Full Catalogue <ArrowRight size={16} />
           </Link>
         </div>
-      </Section>
-
-      {/* ── Peptides 101 guide ───────────────────────────────────────────── */}
-      <Section>
-        <GuideFeature />
       </Section>
 
       {/* ── 7. Open-source purity ────────────────────────────────────────── */}
