@@ -5,6 +5,8 @@ import { Copy, Check, Bitcoin, Building2, ShieldCheck } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDeals } from "@/contexts/DealsContext";
+import DealStrip from "@/components/deals/DealStrip";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
 import { saveOrder, hasUsedPromoCode } from "@/lib/db/orders";
 import { getPaymentSettings, type PaymentSettings } from "@/lib/db/settings";
@@ -17,6 +19,7 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
   const { format } = useCurrency();
   const { user, loading: authLoading } = useAuth();
+  const { evaluate, dealForCode } = useDeals();
 
   const [step, setStep] = useState<Step>("details");
   const [name, setName] = useState("");
@@ -34,19 +37,33 @@ export default function CheckoutPage() {
   const [promoError, setPromoError] = useState<string | null>(null);
   const [checkingPromo, setCheckingPromo] = useState(false);
 
+  // Admin-run deals first (a code typed into the box can unlock a code-gated
+  // deal), then the percentage promo code on whatever is left.
+  const deals = evaluate(items, appliedCode);
+  const afterDeals = Math.max(0, +(total - deals.discountGBP).toFixed(2));
+
   const discountPct = appliedCode ? getPromoPercent(appliedCode) : 0;
-  const discountAmount = +(total * (discountPct / 100)).toFixed(2);
-  const payableTotal = +(total - discountAmount).toFixed(2);
+  const discountAmount = +(afterDeals * (discountPct / 100)).toFixed(2);
+  const payableTotal = +(afterDeals - discountAmount).toFixed(2);
+  const codeDeal = appliedCode ? dealForCode(appliedCode) : null;
 
   async function applyPromo() {
     const code = promoInput.trim().toUpperCase();
     if (!code) return;
-    if (getPromoPercent(code) <= 0) {
+    const percentCode = getPromoPercent(code) > 0;
+    const matchedDeal = dealForCode(code);
+    if (!percentCode && !matchedDeal) {
       setAppliedCode(null);
       setPromoError("That code isn't valid.");
       return;
     }
-    // One use per customer — block if this user has already redeemed it.
+    // Campaign deal codes are reusable; the fixed promo codes are one use per
+    // customer — block if this user has already redeemed one.
+    if (!percentCode) {
+      setPromoError(null);
+      setAppliedCode(code);
+      return;
+    }
     setCheckingPromo(true);
     setPromoError(null);
     try {
@@ -115,6 +132,8 @@ export default function CheckoutPage() {
         currency: "GBP",
         paymentMethod,
         promoCode: appliedCode,
+        appliedDeals: deals.applied.map((d) => ({ label: d.label, amountGBP: d.amountGBP })),
+        gifts: deals.gifts,
       }).catch((err) => {
         console.error("Failed to persist order", err);
         setPersistError(orderPersistMessage(err));
@@ -170,6 +189,8 @@ export default function CheckoutPage() {
       >
         Checkout
       </h1>
+
+      {step !== "confirm" && <DealStrip className="mb-6 max-w-2xl" />}
 
       {/* Progress */}
       <div className="flex items-center gap-4 mb-10">
@@ -391,7 +412,12 @@ export default function CheckoutPage() {
                 {appliedCode ? (
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-sm" style={{ color: "var(--green)" }}>
-                      {appliedCode} applied — {discountPct}% off
+                      {appliedCode} applied
+                      {discountPct > 0
+                        ? ` — ${discountPct}% off`
+                        : codeDeal
+                          ? ` — ${codeDeal.label}`
+                          : ""}
                     </span>
                     <button
                       onClick={removePromo}
@@ -429,17 +455,42 @@ export default function CheckoutPage() {
                 )}
               </div>
 
+              {(discountAmount > 0 || deals.applied.length > 0) && (
+                <div className="flex justify-between text-sm mb-2" style={{ color: "var(--muted)" }}>
+                  <span>Subtotal</span>
+                  <span>{format(total)}</span>
+                </div>
+              )}
+
+              {deals.applied.map((deal) => (
+                <div
+                  key={deal.dealId}
+                  className="flex justify-between text-sm mb-1 gap-3"
+                  style={{ color: "var(--green)" }}
+                >
+                  <span className="min-w-0">{deal.label}</span>
+                  <span className="shrink-0">
+                    {deal.amountGBP > 0
+                      ? `−${format(deal.amountGBP)}`
+                      : deal.giftName
+                        ? "FREE"
+                        : "FREE SHIPPING"}
+                  </span>
+                </div>
+              ))}
+
+              {deals.gifts.map((gift) => (
+                <div key={gift} className="flex justify-between text-sm mb-1 gap-3">
+                  <span style={{ color: "var(--muted)" }}>{gift} (gift)</span>
+                  <span style={{ color: "var(--green)" }}>FREE</span>
+                </div>
+              ))}
+
               {discountAmount > 0 && (
-                <>
-                  <div className="flex justify-between text-sm mb-1" style={{ color: "var(--muted)" }}>
-                    <span>Subtotal</span>
-                    <span>{format(total)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm mb-3" style={{ color: "var(--green)" }}>
-                    <span>Discount ({discountPct}%)</span>
-                    <span>−{format(discountAmount)}</span>
-                  </div>
-                </>
+                <div className="flex justify-between text-sm mb-3" style={{ color: "var(--green)" }}>
+                  <span>Discount ({discountPct}%)</span>
+                  <span>−{format(discountAmount)}</span>
+                </div>
               )}
 
               <div

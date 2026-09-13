@@ -104,6 +104,13 @@ h1, h2, h3, h4, h5, h6 {
   to { transform: rotate(360deg); }
 }
 
+/* Live-activity popups (components/social/SocialProofPopup.tsx) */
+@keyframes socialProofIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.social-proof-pop { animation: socialProofIn 0.35s var(--ease-out) both; }
+
 @media (prefers-reduced-motion: reduce) {
   .fade-up, * {
     animation-duration: 0.01ms !important;

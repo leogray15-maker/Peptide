@@ -1,20 +1,33 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ANNOUNCEMENTS } from "@/lib/config";
 import { useLocalStorageItem, writeLocalStorageItem } from "@/lib/useLocalStorage";
+import { useDeals } from "@/contexts/DealsContext";
+import { dealHeadline } from "@/lib/deals";
 
 const DISMISS_KEY = "arcane_announce_dismissed";
 
 export default function AnnouncementBar() {
   const dismissed = useLocalStorageItem(DISMISS_KEY) !== null;
+  const { activeDeals } = useDeals();
   const [idx, setIdx] = useState(0);
 
-  const next = useCallback(() => setIdx((i) => (i + 1) % ANNOUNCEMENTS.length), []);
-  const prev = useCallback(
-    () => setIdx((i) => (i - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length),
-    []
+  // Live deals lead the rotation — they're the most time-sensitive thing here.
+  const messages = useMemo(
+    () => [...activeDeals.map(dealHeadline), ...ANNOUNCEMENTS],
+    [activeDeals]
   );
+
+  const next = useCallback(() => setIdx((i) => (i + 1) % messages.length), [messages.length]);
+  const prev = useCallback(
+    () => setIdx((i) => (i - 1 + messages.length) % messages.length),
+    [messages.length]
+  );
+
+  // Deals load after the first paint and grow the list, so clamp at render
+  // rather than resetting the index from an effect.
+  const safeIdx = idx % messages.length;
 
   useEffect(() => {
     if (dismissed) return;
@@ -40,7 +53,7 @@ export default function AnnouncementBar() {
       </button>
 
       <span className="label-upper" style={{ color: "#fff", fontSize: "0.65rem" }}>
-        {ANNOUNCEMENTS[idx]}
+        {messages[safeIdx]}
       </span>
 
       <button

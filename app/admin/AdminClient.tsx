@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Package, Users, RefreshCw, ShieldAlert, Settings } from "lucide-react";
+import { LayoutDashboard, Package, Users, RefreshCw, ShieldAlert, Settings, Tag } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import {
@@ -14,8 +14,9 @@ import {
 } from "@/lib/db/orders";
 import { getAllUsers, type UserProfile } from "@/lib/db/users";
 import PaymentSettingsForm from "./PaymentSettingsForm";
+import DealsForm from "./DealsForm";
 
-type Tab = "orders" | "customers" | "settings";
+type Tab = "orders" | "customers" | "deals" | "settings";
 
 export default function AdminClient() {
   const { user, loading, isAdmin } = useAuth();
@@ -157,6 +158,7 @@ export default function AdminClient() {
         {([
           { key: "orders" as const, label: "Orders", icon: Package },
           { key: "customers" as const, label: "Customers", icon: Users },
+          { key: "deals" as const, label: "Deals", icon: Tag },
           { key: "settings" as const, label: "Payment Settings", icon: Settings },
         ]).map(({ key, label, icon: Icon }) => (
           <button
@@ -227,6 +229,8 @@ export default function AdminClient() {
           </div>
         )
       )}
+
+      {tab === "deals" && <DealsForm />}
 
       {tab === "settings" && <PaymentSettingsForm />}
     </div>
@@ -317,6 +321,27 @@ function OrderRow({
             <span>{format(i.priceGBP * i.qty)}</span>
           </div>
         ))}
+
+        {/* Deals that applied, and anything free that has to go in the parcel. */}
+        {order.appliedDeals.map((d, idx) => (
+          <div key={`${d.label}-${idx}`} className="flex justify-between text-xs" style={{ color: "var(--green)" }}>
+            <span>Deal — {d.label}</span>
+            <span>{d.amountGBP > 0 ? `−${format(d.amountGBP)}` : "FREE"}</span>
+          </div>
+        ))}
+
+        {order.gifts.map((gift) => (
+          <div key={gift} className="flex justify-between text-xs" style={{ color: "var(--amber)" }}>
+            <span>Include free — {gift}</span>
+            <span>×1</span>
+          </div>
+        ))}
+
+        {order.promoCode && (
+          <div className="flex justify-between text-xs" style={{ color: "var(--green)" }}>
+            <span>Code — {order.promoCode}</span>
+          </div>
+        )}
       </div>
 
       {/* Controls */}

@@ -6,7 +6,8 @@ export const SITE_TAGLINE = "Beyond the Veil of Research";
 export const SITE_DESCRIPTION =
   "HPLC-verified research compounds, lyophilised for stability. UK-based. Independent COA on every batch.";
 
-export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "+44000000000";
+// `||` not `??` — an env var set to an empty string must fall back too.
+export const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "+44 7951 182240";
 
 export const FREE_SHIPPING_THRESHOLD_GBP = 50;
 
