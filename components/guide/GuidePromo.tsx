@@ -61,11 +61,19 @@ function ModuleList() {
             )}
 
             {isOpen && (
-              <ul className="pb-3 pl-6 flex flex-col gap-1.5">
+              // Long modules (Peptide Breakdowns runs to 41) split into two
+              // columns so the panel doesn't become a wall of text.
+              <ul
+                className={`pb-3 pl-6 ${
+                  module.lessons.length > 12
+                    ? "sm:columns-2 sm:gap-6"
+                    : "flex flex-col gap-1.5"
+                }`}
+              >
                 {module.lessons.map((lesson) => (
                   <li
                     key={lesson}
-                    className="text-xs leading-snug flex gap-2"
+                    className="text-xs leading-snug flex gap-2 break-inside-avoid mb-1.5"
                     style={{ color: "var(--muted)" }}
                   >
                     <span style={{ color: "var(--subtle)" }}>·</span>
