@@ -80,6 +80,38 @@ world-readable so signed-out visitors see the running deal. The rules in
 
 ---
 
+## Feeding the AI OS
+
+`GET /api/leoos-feed` returns a read-only JSON snapshot of the store for the AI
+OS to pull: order counts by status, revenue (all-time, month-to-date, last 30
+days, open order value), customer counts, the catalogue with stock and COA
+state per line, and the live deals. It carries customer *names* on recent
+orders but no emails and no addresses.
+
+Set two environment variables in Vercel:
+
+| Variable | What it is |
+|----------|------------|
+| `LEOOS_FEED_TOKEN` | Shared secret. Generate with `openssl rand -hex 32`. Until it is set the feed returns 503 — it is never open. |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | The service-account JSON from Firebase Console → Project settings → Service accounts → Generate new private key, pasted whole. Server-side reads need it because there is no signed-in admin on an API route. |
+
+Then call it from the OS:
+
+```bash
+curl -H "Authorization: Bearer $LEOOS_FEED_TOKEN" \
+  https://arcanepeptides.vercel.app/api/leoos-feed
+```
+
+Call it from the OS's **server** side (its own route handler or a cron job).
+Fetching it straight from the OS's browser code would ship the token in a
+public bundle. If you do need a browser call, set `LEOOS_ALLOWED_ORIGINS` to
+the OS origin (e.g. `https://leoos-ashen.vercel.app`) — CORS is refused for
+everything not on that list — and accept that the token is then public.
+
+Responses are `Cache-Control: no-store`, so poll as often as the OS needs.
+
+---
+
 ## Changing Payment Details
 
 Bank and crypto wallet details are environment variables (`NEXT_PUBLIC_BANK_*`, `NEXT_PUBLIC_CRYPTO_*`). Update them in Vercel without a code change.
