@@ -109,10 +109,12 @@ Then in LEOOS: **System → Arcane Peptides**, paste the feed URL and the same
 key, and Save. The key travels as the `x-arcane-key` header (a
 `Authorization: Bearer` token or `?key=` also works).
 
-LEOOS runs on a different origin, so for a browser-side pull set `LEOOS_ORIGIN`
-to its origin (e.g. `https://leoos-ashen.vercel.app`) — CORS is refused for
-anything not listed. Note that a browser pull puts the key in LEOOS's client
-bundle; a server-side pull keeps it secret.
+LEOOS runs on a different origin. CORS is open by default because the key is
+what guards the feed — there are no cookies in play, so a browser on any origin
+still has to present `ARCANE_FEED_KEY` and gets a 401 without it. Set
+`LEOOS_ORIGIN` (e.g. `https://leoos-ashen.vercel.app`) to narrow it to one
+origin. Note that a browser pull puts the key in LEOOS's client bundle either
+way; a server-side pull keeps it secret.
 
 Responses are `Cache-Control: no-store`, so poll as often as the OS needs.
 
