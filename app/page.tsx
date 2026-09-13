@@ -10,6 +10,7 @@ import ReviewsStrip from "@/components/home/ReviewsStrip";
 import RestockCapture from "@/components/home/RestockCapture";
 import FormatSelector from "@/components/home/FormatSelector";
 import ResearchHubTeaser from "@/components/home/ResearchHubTeaser";
+import { GuideFeature } from "@/components/guide/GuidePromo";
 
 export const metadata: Metadata = {
   title: "Arcane Peptides — Verified Research Compounds | UK",
@@ -209,6 +210,11 @@ export default function HomePage() {
             View Full Catalogue <ArrowRight size={16} />
           </Link>
         </div>
+      </Section>
+
+      {/* ── Peptides 101 guide ───────────────────────────────────────────── */}
+      <Section>
+        <GuideFeature />
       </Section>
 
       {/* ── 7. Open-source purity ────────────────────────────────────────── */}

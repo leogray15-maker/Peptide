@@ -7,6 +7,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDeals } from "@/contexts/DealsContext";
 import DealStrip from "@/components/deals/DealStrip";
+import { GuideUpsell } from "@/components/guide/GuidePromo";
 import { PriceGate } from "@/components/ui/PriceGate";
 import { getBulkDiscount } from "@/lib/config";
 import { FREE_SHIPPING_THRESHOLD_GBP } from "@/lib/config";
@@ -275,6 +276,8 @@ export default function CartPage() {
               ⚗ All products for laboratory research use only.
             </div>
           </div>
+
+          <GuideUpsell className="mt-4" />
         </div>
       </div>
     </div>

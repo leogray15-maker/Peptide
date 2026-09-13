@@ -7,6 +7,7 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDeals } from "@/contexts/DealsContext";
 import DealStrip from "@/components/deals/DealStrip";
+import { GuideUpsell } from "@/components/guide/GuidePromo";
 import { createOrder, type PaymentMethod, type BankInstructions, type CryptoInstructions, type CheckoutResult } from "@/lib/checkout";
 import { saveOrder, hasUsedPromoCode } from "@/lib/db/orders";
 import { getPaymentSettings, type PaymentSettings } from "@/lib/db/settings";
@@ -366,6 +367,8 @@ export default function CheckoutPage() {
                   ))}
                 </PaymentInstructions>
               )}
+
+              <GuideUpsell heading="While your order is on its way" />
 
               <div className="flex gap-3">
                 <Link
