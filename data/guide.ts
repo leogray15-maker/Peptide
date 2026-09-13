@@ -124,7 +124,16 @@ export const GUIDE = {
         "Why more peptides isn't the same as \"more energy\"",
       ],
     },
-    { title: "Peptides For Pets", lessons: [] },
+    {
+      title: "Peptides For Pets",
+      lessons: [
+        "BPC-157 (Body Protection Compound) for tissue healing in animals",
+        "TB-500 — systemic tissue remodeling",
+        "KPV — the anti-inflammatory",
+        "Practical notes for working with a vet",
+        "Canine BPC-157 protocol chart",
+      ],
+    },
     {
       title: "Supplements",
       lessons: [
@@ -153,7 +162,15 @@ export const GUIDE = {
         "Which \"energy\" peptide is actually right for you?",
       ],
     },
-    { title: "Bioregulators 101", lessons: [] },
+    {
+      title: "Bioregulators 101",
+      lessons: [
+        "The ultimate guide to bioregulators",
+        "Cartalax: the bioregulator for tissue & cartilage",
+        "Epithalon — the longevity peptide",
+        "Pinealon: the peptide that talks to your DNA",
+      ],
+    },
     {
       title: "Bloodwork 101",
       lessons: [
@@ -189,13 +206,29 @@ export const GUIDE = {
         "FOXO4-DRI and the senolytic category",
       ],
     },
-    { title: "Gut Health", lessons: [] },
+    {
+      title: "Gut Health",
+      lessons: [
+        "Why gut health is a performance variable",
+        "How people damage their gut",
+        "Recognizing the warning signs",
+        "The barrier itself",
+        "Where peptides fit into gut repair",
+        "The foundational supplement layer",
+        "Diet and lifestyle",
+        "Putting it together",
+      ],
+    },
   ] satisfies GuideModule[],
 } as const;
 
-// Lessons we can actually list. Modules whose lesson list hasn't been supplied
-// contribute nothing, so this is a floor — the storefront shows it as "N+".
 export const GUIDE_LESSON_COUNT = GUIDE.modules.reduce(
   (sum, m) => sum + m.lessons.length,
   0
+);
+
+// True once every module has its lesson list, so the storefront can drop the
+// "+" it shows while some lists are still outstanding.
+export const GUIDE_LESSONS_COMPLETE = GUIDE.modules.every(
+  (m) => m.lessons.length > 0
 );

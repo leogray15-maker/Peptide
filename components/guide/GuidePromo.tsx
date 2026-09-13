@@ -1,8 +1,11 @@
 "use client";
 import { useState } from "react";
 import { ArrowRight, BookOpen, ChevronDown, Download, FileText } from "lucide-react";
-import { GUIDE, GUIDE_LESSON_COUNT } from "@/data/guide";
+import { GUIDE, GUIDE_LESSON_COUNT, GUIDE_LESSONS_COMPLETE } from "@/data/guide";
 import { formatPrice } from "@/lib/config";
+
+// "135 lessons" once every module's list is in, "118+" while any is missing.
+const LESSON_COUNT = `${GUIDE_LESSON_COUNT}${GUIDE_LESSONS_COMPLETE ? "" : "+"}`;
 
 // The guide is paid for on Stripe, not through the site checkout, so every CTA
 // here is an external link rather than an add-to-cart.
@@ -125,7 +128,7 @@ export function GuideFeature() {
           </a>
           <span className="inline-flex items-center gap-2 text-xs" style={{ color: "var(--subtle)" }}>
             <Download size={13} /> {GUIDE.modules.length} modules ·{" "}
-            {GUIDE_LESSON_COUNT}+ lessons
+            {LESSON_COUNT} lessons
           </span>
         </div>
       </div>
@@ -167,7 +170,7 @@ export function GuideUpsell({
       </p>
       <p className="text-xs leading-relaxed mb-3" style={{ color: "var(--muted)" }}>
         {GUIDE.modules.length}{" "}
-        modules and {GUIDE_LESSON_COUNT}+ lessons, from the beginners&apos; guide through GLP,
+        modules and {LESSON_COUNT} lessons, from the beginners&apos; guide through GLP,
         stacking, bioregulators, nootropics and bloodwork. Instant digital download, bought
         separately from your order.
       </p>
