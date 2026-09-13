@@ -80,6 +80,44 @@ world-readable so signed-out visitors see the running deal. The rules in
 
 ---
 
+## Feeding the AI OS
+
+`GET /api/leoos-feed` returns a read-only JSON snapshot of the store for LEOOS
+to pull. The top level is the shape LEOOS's bridge reads:
+
+```
+currency, revenue, orderCount, pending, customers,
+stock[]  { code, size, vials, batch, coa }      — vials is null: the shop
+orders[] { ref, items, stage, total }             doesn't count vials, so
+                                                  LEOOS keeps its hand count
+detail   { orders, revenue, customers, catalogue, deals }  — everything else
+```
+
+No customer names, emails or addresses cross the wire; `orders[].items` is the
+line items only. `stock[]` covers the compounds that have actually been ordered
+plus the curated best-sellers, so a first pull doesn't open a stock line in
+THE LAB for all 60-odd products (see `lib/server/feed.ts` to widen it).
+
+Set two environment variables in Vercel:
+
+| Variable | What it is |
+|----------|------------|
+| `ARCANE_FEED_KEY` | Shared secret. Generate with `openssl rand -hex 32`. Until it is set the feed returns 503 — it is never open. (`LEOOS_FEED_TOKEN` works as an alias.) |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | The service-account JSON from Firebase Console → Project settings → Service accounts → Generate new private key, pasted whole. Server-side reads need it because there is no signed-in admin on an API route. |
+
+Then in LEOOS: **System → Arcane Peptides**, paste the feed URL and the same
+key, and Save. The key travels as the `x-arcane-key` header (a
+`Authorization: Bearer` token or `?key=` also works).
+
+LEOOS runs on a different origin, so for a browser-side pull set `LEOOS_ORIGIN`
+to its origin (e.g. `https://leoos-ashen.vercel.app`) — CORS is refused for
+anything not listed. Note that a browser pull puts the key in LEOOS's client
+bundle; a server-side pull keeps it secret.
+
+Responses are `Cache-Control: no-store`, so poll as often as the OS needs.
+
+---
+
 ## Changing Payment Details
 
 Bank and crypto wallet details are environment variables (`NEXT_PUBLIC_BANK_*`, `NEXT_PUBLIC_CRYPTO_*`). Update them in Vercel without a code change.
