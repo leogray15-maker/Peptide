@@ -4,9 +4,9 @@
 // serves data unauthenticated.
 //
 // Setup (see README → "Feeding the AI OS"):
-//   LEOOS_FEED_TOKEN               shared secret the OS sends
+//   ARCANE_FEED_KEY                shared secret the OS sends as x-arcane-key
 //   FIREBASE_SERVICE_ACCOUNT_JSON  service-account JSON for Firestore reads
-//   LEOOS_ALLOWED_ORIGINS          optional, comma-separated, for browser calls
+//   LEOOS_ORIGIN                   optional, the OS origin, for browser calls
 
 import { Timestamp } from "firebase-admin/firestore";
 import { adminDb, AdminNotConfiguredError } from "@/lib/server/firebaseAdmin";
@@ -25,7 +25,7 @@ function tsToDate(value: unknown): Date | null {
 }
 
 function corsHeaders(origin: string | null): Record<string, string> {
-  const allowed = (process.env.LEOOS_ALLOWED_ORIGINS ?? "")
+  const allowed = `${process.env.LEOOS_ALLOWED_ORIGINS ?? ""},${process.env.LEOOS_ORIGIN ?? ""}`
     .split(",")
     .map((o) => o.trim())
     .filter(Boolean);
@@ -37,7 +37,7 @@ function corsHeaders(origin: string | null): Record<string, string> {
   if (origin && allowed.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
     headers["Access-Control-Allow-Methods"] = "GET, OPTIONS";
-    headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type";
+    headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, x-arcane-key";
   }
   return headers;
 }
@@ -52,11 +52,20 @@ function tokenMatches(given: string, expected: string): boolean {
 }
 
 function presentedToken(request: Request): string {
+  // LEOOS's bridge sends x-arcane-key; anything else can use a bearer token.
+  const arcaneKey = request.headers.get("x-arcane-key");
+  if (arcaneKey) return arcaneKey.trim();
   const header = request.headers.get("authorization") ?? "";
   const bearer = header.match(/^Bearer\s+(.+)$/i);
   if (bearer) return bearer[1].trim();
-  // Fallback for clients that can't set headers (e.g. a plain <img>/webhook).
+  // Fallback for clients that can't set headers at all.
   return new URL(request.url).searchParams.get("key")?.trim() ?? "";
+}
+
+// ARCANE_FEED_KEY is the name LEOOS documents; LEOOS_FEED_TOKEN is the one this
+// repo's README used first. Either works, so a deployment can't be "wrong".
+function expectedToken(): string {
+  return (process.env.ARCANE_FEED_KEY ?? process.env.LEOOS_FEED_TOKEN ?? "").trim();
 }
 
 export async function OPTIONS(request: Request) {
@@ -68,14 +77,14 @@ export async function GET(request: Request) {
   const json = (body: unknown, status: number) =>
     Response.json(body, { status, headers });
 
-  const expected = process.env.LEOOS_FEED_TOKEN?.trim();
+  const expected = expectedToken();
   if (!expected) {
     // Fail closed: without a token configured this would be an open revenue feed.
     return json(
       {
         error: "feed_disabled",
         message:
-          "LEOOS_FEED_TOKEN is not set on this deployment, so the feed is switched off. Set it in the environment and send it as 'Authorization: Bearer <token>'.",
+          "ARCANE_FEED_KEY is not set on this deployment, so the feed is switched off. Set it in the environment and send it as the 'x-arcane-key' header (a bearer token also works).",
       },
       503
     );
@@ -95,14 +104,21 @@ export async function GET(request: Request) {
 
     const orders: FeedOrder[] = ordersSnap.docs.map((doc) => {
       const d = doc.data();
-      const items = Array.isArray(d.items) ? (d.items as { qty?: number }[]) : [];
+      const rawItems = Array.isArray(d.items)
+        ? (d.items as { name?: string; variantLabel?: string; qty?: number }[])
+        : [];
       return {
         orderId: (d.orderId as string) ?? doc.id,
         status: (d.status as OrderStatus) ?? "pending_payment",
         totalGBP: typeof d.totalGBP === "number" ? d.totalGBP : 0,
-        itemCount: items.reduce((t, i) => t + (typeof i.qty === "number" ? i.qty : 0), 0),
-        // Names only — the OS has no use for emails or shipping addresses.
-        customerName: (d.customerName as string) ?? "",
+        items: rawItems.map((i) => ({
+          name: typeof i.name === "string" ? i.name : "",
+          variantLabel: typeof i.variantLabel === "string" ? i.variantLabel : "",
+          qty: typeof i.qty === "number" ? i.qty : 0,
+        })),
+        // Used only to count unique buyers — no customer identity is published,
+        // so this stays on the server side of the payload.
+        customerKey: (d.userId as string) ?? (d.customerEmail as string) ?? "",
         createdAt: tsToDate(d.createdAt),
       };
     });
