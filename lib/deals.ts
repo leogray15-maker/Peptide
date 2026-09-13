@@ -123,6 +123,20 @@ export const DEAL_PRESETS: { key: string; name: string; deal: Omit<Deal, "id"> }
   },
 ];
 
+// The wording shown to customers. Falls back to a description built from the
+// deal itself when the admin saved it without a headline.
+export function dealHeadline(deal: Deal): string {
+  const label = deal.label.trim();
+  if (label) return label;
+  switch (deal.type) {
+    case "percent_off":   return `${deal.percentOff}% off your order`;
+    case "amount_off":    return `£${deal.amountOffGBP.toFixed(2)} off your order`;
+    case "bogo":          return `Buy ${deal.buyQty} get ${deal.getQty} free`;
+    case "free_gift":     return `Free ${deal.giftName.trim() || "gift"} with your order`;
+    case "free_shipping": return "Free UK delivery";
+  }
+}
+
 // ─── Applying deals to a cart ────────────────────────────────────────────
 
 // The engine works on plain numbers so it stays independent of the cart shape.
@@ -215,32 +229,32 @@ export function applyDeals(
         const amount = round2(running * (deal.percentOff / 100));
         if (amount <= 0) break;
         running = round2(running - amount);
-        applied.push({ dealId: deal.id, label: deal.label, amountGBP: amount });
+        applied.push({ dealId: deal.id, label: dealHeadline(deal), amountGBP: amount });
         break;
       }
       case "amount_off": {
         const amount = round2(Math.min(deal.amountOffGBP, running));
         if (amount <= 0) break;
         running = round2(running - amount);
-        applied.push({ dealId: deal.id, label: deal.label, amountGBP: amount });
+        applied.push({ dealId: deal.id, label: dealHeadline(deal), amountGBP: amount });
         break;
       }
       case "bogo": {
         const amount = round2(Math.min(bogoDiscount(lines, deal.buyQty, deal.getQty), running));
         if (amount <= 0) break;
         running = round2(running - amount);
-        applied.push({ dealId: deal.id, label: deal.label, amountGBP: amount });
+        applied.push({ dealId: deal.id, label: dealHeadline(deal), amountGBP: amount });
         break;
       }
       case "free_gift": {
         const gift = deal.giftName.trim() || deal.label;
         gifts.push(gift);
-        applied.push({ dealId: deal.id, label: deal.label, amountGBP: 0, giftName: gift });
+        applied.push({ dealId: deal.id, label: dealHeadline(deal), amountGBP: 0, giftName: gift });
         break;
       }
       case "free_shipping": {
         freeShipping = true;
-        applied.push({ dealId: deal.id, label: deal.label, amountGBP: 0, freeShipping: true });
+        applied.push({ dealId: deal.id, label: dealHeadline(deal), amountGBP: 0, freeShipping: true });
         break;
       }
     }

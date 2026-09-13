@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ANNOUNCEMENTS } from "@/lib/config";
 import { useLocalStorageItem, writeLocalStorageItem } from "@/lib/useLocalStorage";
 import { useDeals } from "@/contexts/DealsContext";
+import { dealHeadline } from "@/lib/deals";
 
 const DISMISS_KEY = "arcane_announce_dismissed";
 
@@ -14,7 +15,7 @@ export default function AnnouncementBar() {
 
   // Live deals lead the rotation — they're the most time-sensitive thing here.
   const messages = useMemo(
-    () => [...activeDeals.map((d) => d.label).filter(Boolean), ...ANNOUNCEMENTS],
+    () => [...activeDeals.map(dealHeadline), ...ANNOUNCEMENTS],
     [activeDeals]
   );
 

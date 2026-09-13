@@ -87,7 +87,7 @@ function mapSocialProof(raw: unknown): SocialProofSettings {
   };
 }
 
-export function mapPromotions(data: Record<string, unknown> | undefined): Promotions {
+function mapPromotions(data: Record<string, unknown> | undefined): Promotions {
   if (!data) return EMPTY_PROMOTIONS;
   const rawDeals = Array.isArray(data.deals) ? data.deals : [];
   return {
