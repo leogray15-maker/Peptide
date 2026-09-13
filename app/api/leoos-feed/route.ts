@@ -6,7 +6,7 @@
 // Setup (see README → "Feeding the AI OS"):
 //   ARCANE_FEED_KEY                shared secret the OS sends as x-arcane-key
 //   FIREBASE_SERVICE_ACCOUNT_JSON  service-account JSON for Firestore reads
-//   LEOOS_ORIGIN                   optional, the OS origin, for browser calls
+//   LEOOS_ORIGIN                   optional; narrows CORS to that origin
 
 import { Timestamp } from "firebase-admin/firestore";
 import { adminDb, AdminNotConfiguredError } from "@/lib/server/firebaseAdmin";
@@ -24,6 +24,11 @@ function tsToDate(value: unknown): Date | null {
   return null;
 }
 
+// The key is what guards this feed, not the origin: there are no cookies in
+// play, so a browser on any origin still has to present ARCANE_FEED_KEY and
+// gets a 401 without it. CORS is therefore left open unless an allow-list is
+// configured — a missing LEOOS_ORIGIN shouldn't silently break the OS's pull.
+// Set LEOOS_ORIGIN (or LEOOS_ALLOWED_ORIGINS, comma-separated) to narrow it.
 function corsHeaders(origin: string | null): Record<string, string> {
   const allowed = `${process.env.LEOOS_ALLOWED_ORIGINS ?? ""},${process.env.LEOOS_ORIGIN ?? ""}`
     .split(",")
@@ -33,11 +38,14 @@ function corsHeaders(origin: string | null): Record<string, string> {
   const headers: Record<string, string> = {
     Vary: "Origin",
     "Cache-Control": "no-store",
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Authorization, Content-Type, x-arcane-key",
   };
-  if (origin && allowed.includes(origin)) {
+
+  if (allowed.length === 0) {
+    headers["Access-Control-Allow-Origin"] = "*";
+  } else if (origin && allowed.includes(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
-    headers["Access-Control-Allow-Methods"] = "GET, OPTIONS";
-    headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, x-arcane-key";
   }
   return headers;
 }
