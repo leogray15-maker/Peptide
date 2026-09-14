@@ -120,6 +120,57 @@ Responses are `Cache-Control: no-store`, so poll as often as the OS needs.
 
 ---
 
+## The Telegram bot
+
+Order alerts on your phone, and enough commands to run the shop from it.
+
+**What it sends.** A message the moment an order is placed — items, total,
+any free gift, the code used — and a morning digest at 08:00 with yesterday's
+takings, what is still open, and anything that has sat more than three days.
+
+**What it answers.**
+
+| Command | Does |
+|---------|------|
+| `/status` | Takings today, this week and over 30 days; open and unpaid counts |
+| `/orders` | Every order still open, oldest last |
+| `/order REF` | The full order including the shipping address |
+| `/paid REF` · `/processing REF` | Moves the order on |
+| `/shipped REF TRACKING` | Marks it shipped and records the tracking number |
+| `/completed REF` · `/cancel REF` | Closes it |
+| `/stock` | COA coverage and anything out of stock |
+| `/deals` | What is running right now |
+
+### Setting it up
+
+1. Message [@BotFather](https://t.me/botfather), `/newbot`, and keep the token.
+2. Message [@userinfobot](https://t.me/userinfobot) to get your chat id.
+3. Add `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `TELEGRAM_WEBHOOK_SECRET`
+   (`openssl rand -hex 32`) and `CRON_SECRET` to the Vercel project, then
+   redeploy.
+4. Point Telegram at the webhook, once:
+
+```bash
+curl "https://api.telegram.org/bot<TOKEN>/setWebhook\
+?url=https://arcanepeptides.vercel.app/api/telegram/webhook\
+&secret_token=<TELEGRAM_WEBHOOK_SECRET>"
+```
+
+5. Send `/status` to the bot.
+
+### How it is kept private
+
+The bot answers exactly one chat. Every webhook call must carry the secret
+token Telegram was registered with **and** come from `TELEGRAM_CHAT_ID`;
+anything else is ignored with a 200, since refusing tells a stranger they
+found something. `/api/telegram/notify-order` takes only a reference and reads
+the order from Firestore, so posting invented references sends nothing, and
+the announcement is claimed in a transaction so a retry cannot send twice.
+
+Leave the variables unset and the whole thing stays dormant.
+
+---
+
 ## Changing Payment Details
 
 Bank and crypto wallet details are environment variables (`NEXT_PUBLIC_BANK_*`, `NEXT_PUBLIC_CRYPTO_*`). Update them in Vercel without a code change.
