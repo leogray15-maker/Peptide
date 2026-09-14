@@ -135,10 +135,23 @@ export default function CheckoutPage() {
         promoCode: appliedCode,
         appliedDeals: deals.applied.map((d) => ({ label: d.label, amountGBP: d.amountGBP })),
         gifts: deals.gifts,
-      }).catch((err) => {
-        console.error("Failed to persist order", err);
-        setPersistError(orderPersistMessage(err));
-      });
+      })
+        .then(() => {
+          // Ping the notifier once the order really exists. Fire and forget —
+          // the customer's payment instructions never wait on Telegram.
+          void fetch("/api/telegram/notify-order", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId: result.orderId }),
+            keepalive: true,
+          }).catch(() => {
+            /* the daily sweep picks up anything missed */
+          });
+        })
+        .catch((err) => {
+          console.error("Failed to persist order", err);
+          setPersistError(orderPersistMessage(err));
+        });
 
       setOrder(result);
       clearCart();
